@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PedeMais1 - Pedidos Ativos</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- CSS Global -->
+    <link rel="stylesheet" href="../../assets/css/styles.css">
+
+</head>
+
+<body data-requer-auth="true">
+    <!-- Barra de navegação superior -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="../../index.html">PedeMais1</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link active px-4" href="pedidos.html">Pedidos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-4" href="cardapio.html">Cardápio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-4" href="relatorios.html">Relatórios</a>
+                    </li>
+                    <li class="nav-item">
+                        <button id="logout-btn" class="btn btn-outline-danger ms-3">Sair</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar com filtros -->
+            <div class="col-md-3 col-lg-2 sidebar">
+                <h3 class="mb-4">Filtros</h3>
+                <div class="filters-container">
+                    <label for="filtroStatus" class="filtro-label">Status:</label>
+                    <select id="filtroStatus" class="form-select mb-3">
+                        <option value="">Todos</option>
+                        <option value="pendente">Pendente</option>
+                        <option value="em preparo">Em preparo</option>
+                        <option value="pronto">Pronto</option>
+                    </select>
+
+                    <label for="filtroMesa" class="filtro-label">Mesa:</label>
+                    <select id="filtroMesa" class="form-select">
+                        <option value="">Todas as mesas</option>
+                        <!-- Opções de mesas serão adicionadas dinamicamente pelo JavaScript -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Conteúdo principal -->
+            <div class="col-md-9 col-lg-10 content">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Pedidos Ativos</h2>
+                    <a href="novo-pedido.html" class="btn btn-success" id="novo-pedido-btn">
+                        <i class="fas fa-plus me-2"></i>Novo Pedido
+                    </a>
+                </div>
+
+                <!-- Container onde os pedidos serão carregados dinamicamente -->
+                <div id="pedidos-container">
+                    <!-- Spinner de carregamento -->
+                    <div class="text-center my-5" id="loading-spinner">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Carregando...</span>
+                        </div>
+                        <p class="mt-2">Carregando pedidos...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Templates para o pedido -->
+    <template id="pedido-template">
+        <div class="card pedido-card">
+            <div class="card-body">
+                <h5 class="card-title pedido-titulo">Pedido #NUM - Mesa MESA</h5>
+                <p class="card-text pedido-itens">ITENS</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="status-badge">STATUS</span>
+                    <div class="action-buttons">
+                        <!-- Botões serão inseridos dinamicamente pelo JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Bootstrap JavaScript Bundle com Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Supabase JavaScript Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Módulos da aplicação -->
+    <script type="module" src="../scripts/globalAuth.js"></script>
+    <script type="module" src="../scripts/pedidosView.js"></script>
+</body>
+
+</html>

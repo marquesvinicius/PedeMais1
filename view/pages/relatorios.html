@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PedeMais1 - Relatórios</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- CSS Global -->
+    <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+
+<body data-requer-auth="true">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="../../index.html">PedeMais1</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link px-4" href="pedidos.html">Pedidos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-4" href="cardapio.html">Cardápio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active px-4" href="relatorios.html">Relatórios</a>
+                    </li>
+                    <li class="nav-item">
+                        <button id="logout-btn" class="btn btn-outline-danger ms-3">Sair</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Layout -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar (Filtros do relatório) -->
+            <div class="col-md-3 col-lg-2 sidebar">
+                <h3 class="mb-4">Filtros</h3>
+                <div class="filters-container">
+                    <label for="data-inicial" class="filtro-label">Data Inicial:</label>
+                    <input type="date" id="data-inicial" class="form-control mb-3" />
+
+                    <label for="data-final" class="filtro-label">Data Final:</label>
+                    <input type="date" id="data-final" class="form-control mb-3" />
+
+                    <button class="btn btn-primary w-100" id="btn-gerar-relatorio">
+                        <i class="fas fa-chart-line me-2"></i>Gerar Relatório
+                    </button>
+                </div>
+            </div>
+
+            <!-- Conteúdo Principal -->
+            <div class="col-md-9 col-lg-10 content">
+                <h2 class="mb-4">Relatórios de Pedidos</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped align-middle text-center">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Data</th>
+                                <th>Cliente</th>
+                                <th>Pedido</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-relatorio">
+                            <!-- Dados gerados pelo JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Script da Página -->
+    <script type="module" src="../scripts/globalAuth.js"></script>
+    <script type="module" src="../scripts/relatoriosView.js"></script>
+</body>
+
+</html>

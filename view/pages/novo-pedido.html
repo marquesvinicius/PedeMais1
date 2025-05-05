@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PedeMais1 - Novo Pedido</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- CSS Global -->
+    <link rel="stylesheet" href="../../assets/css/styles.css">
+
+</head>
+
+<body data-requer-auth="true">
+
+    <!-- Barra de navegação superior -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="../../index.html">PedeMais1</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link px-4" href="pedidos.html">Pedidos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active px-4" href="cardapio.html">Cardápio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-4" href="relatorios.html">Relatórios</a>
+                    </li>
+                    <li class="nav-item">
+                        <button id="logout-btn" class="btn btn-outline-danger ms-3">Sair</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Cardápio e seleção de itens -->
+            <div class="col-md-8 content">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Novo Pedido</h2>
+                    <div>
+                        <a href="pedidos.html" class="btn btn-outline-secondary me-2">
+                            <i class="fas fa-arrow-left me-2"></i>Voltar
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Seletor de mesa -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <label for="selectMesa" class="form-label">Mesa:</label>
+                                <select id="selectMesa" class="form-select">
+                                    <option value="">Selecione a mesa</option>
+                                    <option value="1">Mesa 1</option>
+                                    <option value="2">Mesa 2</option>
+                                    <option value="3">Mesa 3</option>
+                                    <option value="4">Mesa 4</option>
+                                    <option value="5">Mesa 5</option>
+                                    <option value="6">Mesa 6</option>
+                                    <option value="7">Mesa 7</option>
+                                    <option value="8">Mesa 8</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cardápio por categorias -->
+                <div id="cardapio-container">
+                    <!-- Loading spinner -->
+                    <div class="text-center my-5" id="loading-spinner">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Carregando...</span>
+                        </div>
+                        <p class="mt-2">Carregando cardápio...</p>
+                    </div>
+
+                    <!-- Exemplo de layout de categoria e produtos -->
+                    <div class="categoria-container">
+                        <h4 class="categoria-titulo">Lanches</h4>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="card produto-card" data-id="1" data-nome="Hambúrguer" data-preco="18.90">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Hambúrguer</h5>
+                                        <p class="card-text">Hambúrguer artesanal com queijo, alface e tomate</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="text-primary fw-bold">R$ 18,90</span>
+                                            <div class="produto-acoes">
+                                                <button class="btn btn-sm btn-primary btn-adicionar">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card produto-card" data-id="2" data-nome="X-Bacon" data-preco="22.90">
+                                    <div class="card-body">
+                                        <h5 class="card-title">X-Bacon</h5>
+                                        <p class="card-text">Hambúrguer artesanal com bacon, queijo e molho especial</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="text-primary fw-bold">R$ 22,90</span>
+                                            <div class="produto-acoes">
+                                                <button class="btn btn-sm btn-primary btn-adicionar">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="categoria-container">
+                        <h4 class="categoria-titulo">Bebidas</h4>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="card produto-card" data-id="3" data-nome="Refrigerante" data-preco="6.50">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Refrigerante</h5>
+                                        <p class="card-text">Refrigerante lata 350ml (consulte sabores)</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="text-primary fw-bold">R$ 6,50</span>
+                                            <div class="produto-acoes">
+                                                <button class="btn btn-sm btn-primary btn-adicionar">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card produto-card" data-id="4" data-nome="Suco" data-preco="8.90">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Suco</h5>
+                                        <p class="card-text">Suco natural 400ml (consulte sabores)</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="text-primary fw-bold">R$ 8,90</span>
+                                            <div class="produto-acoes">
+                                                <button class="btn btn-sm btn-primary btn-adicionar">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resumo do pedido -->
+            <div class="col-md-4 sidebar">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Resumo do Pedido</h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="resumo-pedido">
+                            <!-- Os itens do pedido serão adicionados aqui via JavaScript -->
+                            <div class="alert alert-info">
+                                Selecione itens do cardápio para adicionar ao pedido.
+                            </div>
+                        </div>
+
+                        <div class="total-pedido">
+                            Total: R$ <span id="valor-total">0,00</span>
+                        </div>
+
+                        <div class="mt-4">
+                            <button id="btn-finalizar-pedido" class="btn btn-success w-100" disabled>
+                                <i class="fas fa-check-circle me-2"></i>Finalizar Pedido
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmação -->
+    <div class="modal fade" id="confirmacaoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Pedido</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Deseja confirmar o pedido para a Mesa <span id="modal-mesa"></span>?</p>
+                    <div id="modal-resumo"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-confirmar-pedido">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript Bundle com Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Supabase JavaScript Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Módulos da aplicação -->
+    <script type="module" src="../scripts/globalAuth.js"></script>
+    <script type="module" src="../scripts/novoPedidoView.js"></script>
+</body>
+
+</html>

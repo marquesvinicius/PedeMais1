@@ -1,0 +1,368 @@
+/* 
+ * styles.css - Estilos globais para o PedeMais1
+ * Estilos compartilhados entre todas as páginas do sistema
+ */
+
+:root {
+    --cor-fundo-claro: #f8f9fa;
+    --cor-primaria: #2196F3;
+    --cor-primaria-hover: #0d8bf2;
+    --sombra-suave: 0 2px 5px rgba(0, 0, 0, 0.1);
+    --sombra-hover: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.login-container {
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    max-width: 450px;
+}
+
+.logo-container {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.logo-text {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--cor-primaria);
+    margin-bottom: 0.5rem;
+}
+
+.logo-tagline {
+    color: #6c757d;
+    font-size: 1rem;
+}
+
+.login-card {
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.login-card .card-header {
+    background-color: transparent;
+    border-bottom: none;
+    padding-bottom: 0;
+    text-align: center;
+}
+
+.login-card .card-body {
+    padding: 2rem;
+}
+
+.login-btn {
+    padding: 0.6rem;
+    font-weight: 500;
+}
+
+.form-check-input:checked {
+    background-color: var(--cor-primaria);
+    border-color: var(--cor-primaria);
+}
+
+.register-link {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.login-footer {
+    margin-top: auto;
+    padding: 1.5rem 0;
+    background-color: var(--cor-fundo-claro);
+    border-top: 1px solid #e9ecef;
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    display: none;
+}
+
+.form-floating>label {
+    padding-left: 1rem;
+}
+
+.alert-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    max-width: 350px;
+    z-index: 9999;
+}
+
+/* === ESTILOS DO NAVBAR === */
+.navbar {
+    background-color: var(--cor-primaria);
+    box-shadow: var(--sombra-suave);
+}
+
+.navbar-brand {
+    color: white;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    color: white;
+    transition: all 0.3s;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+/* === ESTILOS DA SIDEBAR === */
+.sidebar {
+    background-color: var(--cor-fundo-claro);
+    border-right: 1px solid #dee2e6;
+    height: calc(100vh - 56px);
+    position: sticky;
+    top: 56px;
+    padding: 20px;
+}
+
+/* === ESTILOS DO CONTEÚDO PRINCIPAL === */
+.content {
+    padding: 20px;
+}
+
+.main-title {
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+/* === BOTÕES === */
+.btn-primary {
+    background-color: var(--cor-primaria);
+    border-color: var(--cor-primaria);
+}
+
+.btn-primary:hover {
+    background-color: var(--cor-primaria-hover);
+    border-color: var(--cor-primaria-hover);
+}
+
+/* === CARDS === */
+.card {
+    border: none;
+    box-shadow: var(--sombra-suave);
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+}
+
+.card-header {
+    background-color: var(--cor-fundo-claro);
+    border-bottom: 1px solid #eee;
+    font-weight: 600;
+}
+
+.card-produto {
+    transition: transform 0.2s;
+}
+
+.card-produto:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.categoria-titulo {
+    border-left: 4px solid #007bff;
+    padding-left: 10px;
+    margin: 20px 0;
+}
+
+/* === FORMULÁRIOS === */
+.form-control:focus {
+    border-color: var(--cor-primaria);
+    box-shadow: 0 0 0 0.25rem rgba(33, 150, 243, 0.25);
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+/* === ALERTS === */
+.alert {
+    border-radius: 8px;
+    border: none;
+}
+
+/* === COMPONENTES PERSONALIZADOS === */
+.section-divider {
+    height: 1px;
+    background-color: #e9ecef;
+    margin: 2rem 0;
+}
+
+.status-badge {
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 20px;
+    color: white;
+}
+
+.status-pendente {
+    background-color: #dc3545;
+}
+
+.status-preparo {
+    background-color: #fd7e14;
+}
+
+.status-pronto {
+    background-color: #28a745;
+}
+
+/* Classes utilitárias */
+.hover-levitar:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--sombra-hover);
+}
+
+.bg-claro {
+    background-color: var(--cor-fundo-claro);
+}
+
+/* Estilos específicos da página de novo pedido */
+.produto-card {
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--sombra-suave);
+}
+
+.produto-card:hover {
+    @extend .hover-levitar;
+}
+
+.produto-selecionado {
+    border: 2px solid var(--cor-primaria);
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.3);
+}
+
+.categoria-titulo {
+    @extend .bg-claro;
+    padding: 10px 15px;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.contador-quantidade {
+    width: 80px;
+}
+
+.resumo-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+#resumo-pedido {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.total-pedido {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-top: 15px;
+    text-align: right;
+}
+
+.pedido-card {
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: var(--sombra-suave);
+    transition: transform 0.2s;
+}
+
+.pedido-card:hover {
+    @extend .hover-levitar;
+}
+
+.pedido-titulo {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.pedido-itens {
+    color: #666;
+    margin-bottom: 15px;
+}
+
+#novo-pedido-btn {
+    margin-bottom: 20px;
+}
+
+.filtro-label {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.filters-container {
+    margin-bottom: 25px;
+}
+
+/* === RESPONSIVIDADE === */
+@media (max-width: 768px) {
+    .sidebar {
+        height: auto;
+        position: relative;
+        top: 0;
+        border-right: none;
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 15px;
+    }
+
+    .nav-link {
+        padding: 0.5rem;
+    }
+}
+
+/* === ANIMAÇÕES === */
+.fade-in {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* === RODAPÉ === */
+footer {
+    @extend .bg-claro;
+    padding: 1rem 0;
+    margin-top: 2rem;
+    border-top: 1px solid #e9ecef;
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.875rem;
+}
