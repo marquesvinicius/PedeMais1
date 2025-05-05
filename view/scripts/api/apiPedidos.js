@@ -1,6 +1,6 @@
 export async function buscarPedidos() {
   const token = localStorage.getItem('token')
-  const response = await fetch('http://localhost:5000/api/pedidos', {
+  const response = await fetch(`${BASE_URL}/api/pedidos`, {
     headers: { Authorization: `Bearer ${token}` }
   })
   const data = await response.json()
@@ -9,7 +9,7 @@ export async function buscarPedidos() {
 
 export async function atualizarStatusPedido(id, novoStatus) {
   const token = localStorage.getItem('token')
-  await fetch(`http://localhost:5000/api/pedidos/${id}`, {
+  await fetch(`${BASE_URL}/api/pedidos/${id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -32,7 +32,7 @@ export async function filtrarPedidosPorMesa(pedidos, mesa) {
 export async function criarPedido(pedido) {
   const token = localStorage.getItem('token')
 
-  const response = await fetch('http://localhost:5000/api/pedidos', {
+  const response = await fetch(`${BASE_URL}/api/pedidos`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
