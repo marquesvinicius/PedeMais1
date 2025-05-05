@@ -1,4 +1,5 @@
 // view/scripts/api/apiAuth.js
+import { BASE_URL } from '../config.js'
 
 export async function login(email, senha) {
     const response = await fetch('${BASE_URL}/api/auth/login', {

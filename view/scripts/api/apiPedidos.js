@@ -1,3 +1,6 @@
+import { BASE_URL } from '../config.js'
+
+
 export async function buscarPedidos() {
   const token = localStorage.getItem('token')
   const response = await fetch(`${BASE_URL}/api/pedidos`, {

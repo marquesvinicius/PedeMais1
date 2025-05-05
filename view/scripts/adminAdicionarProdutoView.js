@@ -1,5 +1,7 @@
 // view/scripts/adminAdicionarProdutoView.js
 import { getUsuarioAtual } from './api/apiAuth.js'
+import { BASE_URL } from './config.js'
+
 
 document.addEventListener('DOMContentLoaded', async () => {
     const usuario = getUsuarioAtual()
