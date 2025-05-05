@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const token = localStorage.getItem('token')
 
-                const response = await fetch('${BASE_URL}/api/cardapio', {
+                const response = await fetch(`${BASE_URL}/api/cardapio`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
