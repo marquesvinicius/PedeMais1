@@ -61,7 +61,7 @@ pedeMais1/
 1. Clone o repositório:
 
 ```
-git clone https://github.com/seuusuario/pedemais1.git
+git clone https://github.com/marquesvinicius/pedemais1.git
 ```
 
 2. Instale as dependências:
