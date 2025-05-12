@@ -1,168 +1,139 @@
 // view/scripts/cardapioView.js
-import * as apiProdutos from './api/apiProdutos.js'
-import * as apiAuth from './api/apiAuth.js'
+import * as apiCardapio from './api/apiCardapio.js'
 
-
-document.addEventListener('DOMContentLoaded', async () => {
-    // Verificar autenticação
-    await apiAuth.verificarAutenticacao()
-
+document.addEventListener('DOMContentLoaded', () => {
     // Elementos do DOM
-    const produtosContainer = document.getElementById('produtos-container')
-    const listaProdutos = document.getElementById('lista-produtos')
-    const loadingSpinner = document.getElementById('loading-spinner')
-    const filtroCategoria = document.getElementById('filtroCategoria')
-    const filtroPreco = document.getElementById('filtroPreco')
+    const cardapioContainer = document.getElementById('produtos-container')
+    const listaCardapio = document.getElementById('lista-produtos')
+    const searchInput = document.getElementById('searchInput')
+    const filterSelect = document.getElementById('filterSelect')
+    const priceRange = document.getElementById('priceRange')
+    const priceValue = document.getElementById('priceValue')
 
-    // Templates
-    const categoriaTemplate = document.getElementById('categoria-template')
-    const produtoTemplate = document.getElementById('produto-template')
-
-    // Estado da aplicação
-    let produtos = []
-    let filtrosAtivos = {
-        categoria: 'todos',
-        preco: 'todos'
-    }
+    // Estado
+    let cardapio = []
 
     // Inicialização
-    inicializar()
+    init()
 
-    async function inicializar() {
-        await carregarProdutos()
-        configurarEventListeners()
-    }
-
-    // Configuração de event listeners
-    function configurarEventListeners() {
-        if (filtroCategoria) filtroCategoria.addEventListener('change', aplicarFiltros)
-        if (filtroPreco) filtroPreco.addEventListener('change', aplicarFiltros)
-    }
-
-    // Funções principais
-    async function carregarProdutos() {
+    async function init() {
         try {
-            mostrarLoading(true)
-
-            const data = await apiProdutos.buscarCardapio()
-            console.log('Produtos carregados:', data) // 👈 Adicione isso
-            data.forEach(p => console.log(p));
-            produtos = data
-            renderizarProdutos(produtos)
+            await carregarCardapio()
+            setupEventListeners()
         } catch (error) {
-            console.error('Erro ao carregar produtos:', error)
-            mostrarErro('Erro ao carregar produtos. Por favor, tente novamente.')
-        } finally {
-            mostrarLoading(false)
+            console.error('Erro ao inicializar:', error)
+            mostrarErro('Erro ao carregar o cardápio. Por favor, tente novamente.')
         }
     }
 
-    function renderizarProdutos(produtosFiltrados) {
-        if (!listaProdutos) return
+    async function carregarCardapio() {
+        try {
+            const data = await apiCardapio.buscarCardapio()
+            console.log('Cardápio carregado:', data)
 
-        listaProdutos.innerHTML = ''
-        const categorias = [...new Set(produtosFiltrados.map(p => p.categoria || 'Outros'))]
+            cardapio = data
+            renderizarCardapio(cardapio)
+        } catch (error) {
+            console.error('Erro ao carregar cardápio:', error)
+            mostrarErro('Erro ao carregar cardápio. Por favor, tente novamente.')
+        }
+    }
+
+    function setupEventListeners() {
+        if (searchInput) {
+            searchInput.addEventListener('input', filtrarCardapio)
+        }
+        if (filterSelect) {
+            filterSelect.addEventListener('change', filtrarCardapio)
+        }
+        if (priceRange) {
+            priceRange.addEventListener('input', (e) => {
+                if (priceValue) priceValue.textContent = `R$ ${e.target.value}`
+                filtrarCardapio()
+            })
+        }
+    }
+
+    function renderizarCardapio(cardapioFiltrado) {
+        if (!listaCardapio) return
+
+        listaCardapio.innerHTML = ''
+        const categorias = [...new Set(cardapioFiltrado.map(p => p.categoria || 'Outros'))]
 
         categorias.forEach(categoria => {
-            const produtosCategoria = produtosFiltrados.filter(p => p.categoria === categoria)
-            if (produtosCategoria.length > 0) {
-                const categoriaElement = criarSecaoCategoria(categoria)
-                const produtosContainer = categoriaElement.querySelector('[data-categoria]')
+            const itensCategoria = cardapioFiltrado.filter(p => p.categoria === categoria)
+            if (itensCategoria.length > 0) {
+                const categoriaElement = criarElementoCategoria(categoria)
+                const itensContainer = categoriaElement.querySelector('[data-categoria]')
 
-                if (produtosContainer) {
-                    produtosCategoria.forEach(produto => {
-                        const produtoElement = criarCardProduto(produto)
-                        produtosContainer.appendChild(produtoElement)
+                if (itensContainer) {
+                    itensCategoria.forEach(item => {
+                        const itemElement = criarElementoItem(item)
+                        itensContainer.appendChild(itemElement)
                     })
-
-                    listaProdutos.appendChild(categoriaElement)
                 }
+
+                listaCardapio.appendChild(categoriaElement)
             }
         })
     }
 
-    function criarSecaoCategoria(categoria) {
-        if (!categoriaTemplate) return document.createElement('div')
-
-        const template = categoriaTemplate.content.cloneNode(true)
-        const titulo = template.querySelector('.categoria-titulo')
-        const container = template.querySelector('[data-categoria]')
-
-        if (titulo) titulo.textContent = formatarTituloCategoria(categoria)
-        if (container) container.dataset.categoria = categoria
-
-        return template
+    function criarElementoCategoria(categoria) {
+        const div = document.createElement('div')
+        div.className = 'cardapio-categoria mb-4'
+        div.innerHTML = `
+            <h3 class="categoria-titulo mb-3">${categoria}</h3>
+            <div class="row" data-categoria="${categoria}">
+            </div>
+        `
+        return div
     }
 
-    function criarCardProduto(produto) {
-        if (!produtoTemplate) return document.createElement('div')
-
-        const template = produtoTemplate.content.cloneNode(true)
-
-        const nome = template.querySelector('.produto-nome')
-        const descricao = template.querySelector('.produto-descricao')
-        const preco = template.querySelector('.produto-preco')
-        const btnDetalhes = template.querySelector('.btn-ver-detalhes')
-
-        if (nome) nome.textContent = produto.nome
-        if (descricao) descricao.textContent = produto.descricao
-        if (preco) preco.textContent = `R$ ${produto.preco.toFixed(2)}`
-
-        if (btnDetalhes) {
-            btnDetalhes.addEventListener('click', () => mostrarDetalhesProduto(produto))
-        }
-
-        return template
+    function criarElementoItem(item) {
+        const div = document.createElement('div')
+        div.className = 'col-md-4 mb-4'
+        div.innerHTML = `
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">${item.nome}</h5>
+                    <p class="card-text">${item.descricao || ''}</p>
+                    <p class="card-text"><strong>R$ ${item.preco.toFixed(2)}</strong></p>
+                </div>
+            </div>
+        `
+        return div
     }
 
-    async function aplicarFiltros() {
-        if (!filtroCategoria || !filtroPreco) return
+    function filtrarCardapio() {
+        let cardapioFiltrado = [...cardapio]
 
-        filtrosAtivos.categoria = filtroCategoria.value
-        filtrosAtivos.preco = filtroPreco.value
-
-        let produtosFiltrados = [...produtos]
-
-        if (filtrosAtivos.categoria !== 'todos') {
-            produtosFiltrados = produtosFiltrados.filter(
-                (p) => p.categoria === filtrosAtivos.categoria
+        // Filtro de busca
+        if (searchInput && searchInput.value) {
+            const searchTerm = searchInput.value.toLowerCase()
+            cardapioFiltrado = cardapioFiltrado.filter(
+                p => p.nome.toLowerCase().includes(searchTerm) ||
+                    p.descricao?.toLowerCase().includes(searchTerm)
             )
         }
 
-        if (filtrosAtivos.preco === 'menor10') {
-            produtosFiltrados = produtosFiltrados.filter((p) => p.preco < 10)
-        } else if (filtrosAtivos.preco === '10a30') {
-            produtosFiltrados = produtosFiltrados.filter(
-                (p) => p.preco >= 10 && p.preco <= 30
-            )
-        } else if (filtrosAtivos.preco === 'maior30') {
-            produtosFiltrados = produtosFiltrados.filter((p) => p.preco > 30)
+        // Filtro de categoria
+        if (filterSelect && filterSelect.value) {
+            if (filterSelect.value === 'menos10') {
+                cardapioFiltrado = cardapioFiltrado.filter((p) => p.preco < 10)
+            } else if (filterSelect.value === 'mais30') {
+                cardapioFiltrado = cardapioFiltrado.filter((p) => p.preco > 30)
+            } else {
+                cardapioFiltrado = cardapioFiltrado.filter(
+                    (p) => p.categoria === filterSelect.value
+                )
+            }
         }
 
-        renderizarProdutos(produtosFiltrados)
-    }
-
-    function mostrarDetalhesProduto(produto) {
-        // Aqui você pode abrir um modal ou preencher um container lateral
-        // com as informações detalhadas do produto
-        alert(
-            `Detalhes do produto:\n\nNome: ${produto.nome}\nDescrição: ${produto.descricao}\nPreço: R$ ${produto.preco.toFixed(
-                2
-            )}`
-        )
-    }
-
-    function mostrarLoading(ativo) {
-        if (loadingSpinner) {
-            loadingSpinner.style.display = ativo ? 'block' : 'none'
-        }
+        renderizarCardapio(cardapioFiltrado)
     }
 
     function mostrarErro(mensagem) {
-        alert(mensagem) // futuramente trocar por um componente visual de erro
-    }
-
-    function formatarTituloCategoria(categoria) {
-        return categoria.charAt(0).toUpperCase() + categoria.slice(1)
+        // Implementar lógica de exibição de erro
+        console.error(mensagem)
     }
 })

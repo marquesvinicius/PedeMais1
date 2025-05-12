@@ -1,42 +1,41 @@
-const { supabase } = require('../services/supabaseClient');
+const { supabase } = require('../config/supabase');
 
 const buscarCardapio = async (req, res) => {
-    const { data, error } = await supabase
-        .from('produtos')
-        .select('*')
-        .order('categoria, nome');
+    try {
+        const { data, error } = await supabase
+            .from('cardapio')
+            .select('*')
+            .order('categoria', { ascending: true });
 
-    if (error) {
-        return res.status(500).json({ erro: 'Erro ao buscar cardápio.', detalhes: error.message });
+        if (error) throw error;
+        res.json(data);
+    } catch (error) {
+        console.error('Erro ao buscar cardápio:', error);
+        res.status(500).json({ erro: 'Erro ao buscar cardápio' });
     }
-
-    res.status(200).json(data);
 };
 
-const adicionarProduto = async (req, res) => {
-    const { nome, descricao, preco, categoria } = req.body;
-    const papel = req.user?.papel;
+const adicionarItem = async (req, res) => {
+    try {
+        // Verificar se é admin
+        if (!req.usuario?.isAdmin) {
+            return res.status(403).json({ erro: 'Apenas administradores podem adicionar itens.' });
+        }
 
-    if (papel !== 'admin') {
-        return res.status(403).json({ erro: 'Apenas administradores podem adicionar produtos.' });
+        const { data, error } = await supabase
+            .from('cardapio')
+            .insert([req.body])
+            .select();
+
+        if (error) throw error;
+        res.status(201).json(data[0]);
+    } catch (error) {
+        console.error('Erro ao adicionar item:', error);
+        res.status(500).json({ erro: 'Erro ao adicionar item' });
     }
-
-    if (!nome || !preco || !categoria) {
-        return res.status(400).json({ erro: 'Nome, preço e categoria são obrigatórios.' });
-    }
-    const { data, error } = await supabase
-        .from('produtos')
-        .insert([{ nome, descricao, preco, categoria }]) // Removi imagem, já que não existe
-        .select(); // <- ESSA LINHA FAZ TUDO FUNCIONAR
-
-    if (error) {
-        return res.status(500).json({ erro: 'Erro ao adicionar produto.', detalhes: error.message });
-    }
-
-    res.status(201).json({ mensagem: 'Produto adicionado com sucesso.', produto: data[0] });
 };
 
 module.exports = {
     buscarCardapio,
-    adicionarProduto
+    adicionarItem
 };

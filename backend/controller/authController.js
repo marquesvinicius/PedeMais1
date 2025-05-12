@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { supabase } = require('../services/supabaseClient');
+const { supabase } = require('../config/supabase');
 
 // Login
 const login = async (req, res) => {
@@ -29,7 +29,7 @@ const login = async (req, res) => {
 
     const token = jwt.sign(
         { id: usuario.id, email: usuario.email, papel: usuario.papel },
-        process.env.JWT_SECRET,
+        process.env.JWT_SECRET || 'sua_chave_secreta_aqui',
         { expiresIn: '6h' }
     );
 

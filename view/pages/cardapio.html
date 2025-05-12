@@ -126,20 +126,29 @@
                     </div>
                 </div>
 
-
-                <!-- Container onde os produtos serão carregados dinamicamente -->
+                <!-- Container onde os itens do cardápio serão carregados dinamicamente -->
                 <div id="produtos-container">
-                    <!-- Spinner de carregamento -->
-                    <div class="text-center my-5" id="loading-spinner">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Carregando...</span>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Buscar no cardápio...">
                         </div>
-                        <p class="mt-2">Carregando produtos...</p>
+                        <div class="col-md-3">
+                            <select id="filterSelect" class="form-select">
+                                <option value="">Todas as categorias</option>
+                                <option value="menos10">Menos de R$ 10</option>
+                                <option value="mais30">Mais de R$ 30</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex align-items-center">
+                                <input type="range" id="priceRange" class="form-range" min="0" max="100" step="1">
+                                <span id="priceValue" class="ms-2">R$ 50</span>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Categorias e Produtos -->
                     <div id="lista-produtos">
-                        <!-- O conteúdo será inserido dinamicamente via JavaScript -->
+                        <!-- Os itens do cardápio serão carregados aqui -->
                     </div>
                 </div>
             </div>

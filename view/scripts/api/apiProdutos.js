@@ -1,21 +1,63 @@
-// view/scripts/api/apiProdutos.js
+// view/scripts/api/apiCardapio.js
 import { supabase } from '../../../supabase.js'
 
 export async function buscarCardapio() {
-    const { data, error } = await supabase
-        .from('produtos')
-        .select('*')
-        .order('categoria, nome')
+    try {
+        const { data, error } = await supabase
+            .from('cardapio')
+            .select('*')
+            .order('categoria', { ascending: true })
 
-    if (error) {
-        throw new Error(`Erro ao buscar cardápio: ${error.message}`)
+        if (error) throw error
+        return data
+    } catch (error) {
+        console.error('Erro ao buscar cardápio:', error)
+        throw error
     }
+}
 
-    return data.map(produto => ({
-        id: produto.id,
-        nome: produto.nome,
-        categoria: produto.categoria,
-        preco: produto.preco,
-        descricao: produto.descricao,
-    }))
+export async function adicionarItem(item) {
+    try {
+        const { data, error } = await supabase
+            .from('cardapio')
+            .insert([item])
+            .select()
+
+        if (error) throw error
+        return data[0]
+    } catch (error) {
+        console.error('Erro ao adicionar item:', error)
+        throw error
+    }
+}
+
+export async function atualizarItem(id, item) {
+    try {
+        const { data, error } = await supabase
+            .from('cardapio')
+            .update(item)
+            .eq('id', id)
+            .select()
+
+        if (error) throw error
+        return data[0]
+    } catch (error) {
+        console.error('Erro ao atualizar item:', error)
+        throw error
+    }
+}
+
+export async function removerItem(id) {
+    try {
+        const { error } = await supabase
+            .from('cardapio')
+            .delete()
+            .eq('id', id)
+
+        if (error) throw error
+        return true
+    } catch (error) {
+        console.error('Erro ao remover item:', error)
+        throw error
+    }
 }

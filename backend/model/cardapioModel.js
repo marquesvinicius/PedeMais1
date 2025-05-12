@@ -1,13 +1,13 @@
-import { supabase } from '../../supabase.js';
+const { supabase } = require('../config/supabase')
 
-export class CardapioModel {
+class CardapioModel {
     // Fetch all menu items from the database
     static async fetchCardapio() {
         try {
             const { data, error } = await supabase
-                .from('produtos')
+                .from('cardapio')
                 .select('*')
-                .order('categoria, nome');
+                .order('categoria', { ascending: true });
 
             if (error) {
                 throw new Error(`Erro ao buscar cardápio: ${error.message}`);
@@ -26,3 +26,5 @@ export class CardapioModel {
         }
     }
 }
+
+module.exports = { CardapioModel }
