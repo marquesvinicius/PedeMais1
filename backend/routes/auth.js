@@ -7,5 +7,3 @@ router.post('/login', login);
 router.post('/register', registrar);
 
 module.exports = router;
-
-router.post('/register', registrar);
