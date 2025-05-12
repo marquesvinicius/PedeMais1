@@ -1,5 +1,5 @@
 const { buscarCardapio, adicionarItem } = require('../controller/cardapioController');
-const { supabaseMock } = require('./mocks/supabaseMock');
+const { supabaseMock } = require('../mocks/supabaseMock');
 
 beforeAll(() => {
   jest.spyOn(console, 'log').mockImplementation(() => {});

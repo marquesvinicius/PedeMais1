@@ -5,6 +5,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const pedidosRoutes = require('./routes/pedidos');
 const cardapioRoutes = require('./routes/cardapio');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 
@@ -28,18 +29,30 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/pedidos', pedidosRoutes);
 app.use('/api/cardapio', cardapioRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Rota de teste
 app.get('/api/test', (req, res) => {
     res.json({ message: 'API está funcionando!' });
 });
 
-// Inicialização do servidor
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, '0.0.0.0', () => {
+// Middleware de erro
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ erro: 'Erro interno do servidor.' });
+});
+
+// Exporta o app para testes
+if (process.env.NODE_ENV === 'test') {
+  module.exports = app;
+} else {
+  // Inicia o servidor apenas se não estiver em ambiente de teste
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
     console.log('Rotas disponíveis:');
     console.log('- GET  /api/test');
     console.log('- POST /api/auth/login');
     console.log('- POST /api/auth/register');
-});
+  });
+}
