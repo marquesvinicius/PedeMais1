@@ -2,9 +2,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: [master]
+    branches: [master, ci-pipeline]
   pull_request:
-    branches: [master]
+    branches: [master, ci-pipeline]
 
 jobs:
   build:
@@ -17,7 +17,7 @@ jobs:
       - name: Instalar o Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Instalar dependências
         run: npm install
@@ -26,3 +26,4 @@ jobs:
       - name: Rodar os testes
         run: npm test
         working-directory: ./backend
+
