@@ -24,6 +24,8 @@ jobs:
         working-directory: ./backend
 
       - name: Rodar os testes
+        env:
+          NODE_ENV: test
         run: npm test
         working-directory: ./backend
 
