@@ -1,0 +1,29 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [master, ci-pipeline]
+  pull_request:
+    branches: [master, ci-pipeline]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar o repositório
+        uses: actions/checkout@v3
+
+      - name: Instalar o Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Instalar dependências
+        run: npm install
+        working-directory: ./backend
+
+      - name: Rodar os testes
+        run: npm test
+        working-directory: ./backend
+
