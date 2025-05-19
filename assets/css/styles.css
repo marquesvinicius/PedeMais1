@@ -366,3 +366,185 @@ footer {
     color: #6c757d;
     font-size: 0.875rem;
 }
+
+/* === ESTILOS DO CADASTRO === */
+.card {
+    border: none;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.input-group-text {
+    background-color: var(--cor-fundo-claro);
+    border-right: none;
+}
+
+.form-control {
+    border-left: none;
+}
+
+.form-control:focus {
+    border-color: #ced4da;
+    box-shadow: none;
+}
+
+.input-group:focus-within {
+    box-shadow: 0 0 0 0.25rem rgba(33, 150, 243, 0.25);
+}
+
+.input-group:focus-within .input-group-text,
+.input-group:focus-within .form-control {
+    border-color: var(--cor-primaria);
+}
+
+.btn-primary {
+    background-color: var(--cor-primaria);
+    border-color: var(--cor-primaria);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--cor-primaria-hover);
+    border-color: var(--cor-primaria-hover);
+    transform: translateY(-2px);
+}
+
+/* Animações para o formulário */
+.card {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsividade do formulário */
+@media (max-width: 768px) {
+    .card {
+        margin: 0 1rem;
+    }
+}
+
+/* Estilos para os RadioButtons */
+.form-check {
+
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.form-check:hover {
+    background-color: var(--cor-fundo-claro);
+    border-color: var(--cor-primaria);
+}
+
+.form-check-input:checked {
+    background-color: var(--cor-primaria);
+    border-color: var(--cor-primaria);
+}
+
+.form-check-input:checked + .form-check-label {
+    color: var(--cor-primaria);
+    font-weight: 500;
+}
+
+.form-check-input:checked ~ small {
+    color: var(--cor-primaria);
+}
+
+.form-check-label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.form-check-label i {
+    font-size: 1.2rem;
+    margin-right: 0.5rem;
+}
+
+/* Estilos para os Cards de Papel */
+.role-card {
+    flex: 1;
+    min-width: 200px;
+    border: 2px solid #dee2e6;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.role-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--cor-primaria);
+    box-shadow: var(--sombra-hover);
+}
+
+/* Estilos específicos para os form-check dentro dos cards de papel */
+.role-card .form-check {
+    padding: 0;
+    border: none;
+    transition: none;
+}
+
+.role-card .form-check:hover {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.role-card .form-check-input {
+    margin-top: 0.2rem;
+}
+
+.role-card .form-check-label {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.role-card .form-check-label i {
+    font-size: 1.3rem;
+    color: var(--cor-primaria);
+}
+
+.role-description {
+    padding-left: 1.5rem;
+}
+
+.role-description small {
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+.role-description i {
+    color: var(--cor-primaria);
+    font-size: 0.9rem;
+}
+
+/* Estilo quando o card está selecionado */
+.role-card .form-check-input:checked ~ .form-check-label,
+.role-card .form-check-input:checked ~ .role-description {
+    color: var(--cor-primaria);
+}
+
+.role-card .form-check-input:checked ~ .role-description i {
+    color: var(--cor-primaria);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .d-flex.gap-4 {
+        flex-direction: column;
+        gap: 1rem !important;
+    }
+
+    .role-card {
+        width: 100%;
+    }
+}
