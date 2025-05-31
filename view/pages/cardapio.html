@@ -109,7 +109,12 @@
 
                                     <div class="mb-3">
                                         <label for="produtoCategoria" class="form-label">Categoria</label>
-                                        <input type="text" class="form-control" id="produtoCategoria" required>
+                                        <select class="form-select" id="produtoCategoria" required>
+                                            <option value="">Selecione uma categoria</option>
+                                            <option value="lanches">Lanches</option>
+                                            <option value="bebidas">Bebidas</option>
+                                            <option value="sobremesas">Sobremesas</option>
+                                        </select>
                                     </div>
 
                                     <div id="mensagem-erro-produto" class="alert alert-danger d-none" role="alert">
@@ -126,6 +131,52 @@
                     </div>
                 </div>
 
+                <!-- Modal para detalhes do produto -->
+                <div class="modal fade" id="modalDetalhesProduto" tabindex="-1" aria-labelledby="modalDetalhesProdutoLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalDetalhesProdutoLabel">Detalhes do Produto</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Fechar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h4 id="detalhe-nome" class="text-primary mb-3"></h4>
+                                        
+                                        <div class="mb-3">
+                                            <strong>Categoria:</strong>
+                                            <span id="detalhe-categoria" class="badge bg-secondary ms-2"></span>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <strong>Preço:</strong>
+                                            <span id="detalhe-preco" class="text-success fw-bold fs-5 ms-2"></span>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <strong>Descrição:</strong>
+                                            <p id="detalhe-descricao" class="mt-2 text-muted"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <!-- Botão de editar será exibido apenas para admins -->
+                                <button type="button" class="btn btn-warning d-none" id="btn-editar-produto">
+                                    <i class="fas fa-edit me-1"></i>Editar
+                                </button>
+                                <!-- Botão de remover será exibido apenas para admins -->
+                                <button type="button" class="btn btn-danger d-none" id="btn-remover-produto">
+                                    <i class="fas fa-trash me-1"></i>Remover
+                                </button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Container onde os produtos serão carregados dinamicamente -->
                 <div id="produtos-container">

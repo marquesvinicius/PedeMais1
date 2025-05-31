@@ -129,13 +129,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             )
         }
 
-        if (filtrosAtivos.preco === 'menor10') {
-            produtosFiltrados = produtosFiltrados.filter((p) => p.preco < 10)
-        } else if (filtrosAtivos.preco === '10a30') {
+        if (filtrosAtivos.preco === 'ate15') {
+            produtosFiltrados = produtosFiltrados.filter((p) => p.preco <= 15)
+        } else if (filtrosAtivos.preco === '15a30') {
             produtosFiltrados = produtosFiltrados.filter(
-                (p) => p.preco >= 10 && p.preco <= 30
+                (p) => p.preco > 15 && p.preco <= 30
             )
-        } else if (filtrosAtivos.preco === 'maior30') {
+        } else if (filtrosAtivos.preco === 'mais30') {
             produtosFiltrados = produtosFiltrados.filter((p) => p.preco > 30)
         }
 
@@ -143,13 +143,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function mostrarDetalhesProduto(produto) {
-        // Aqui você pode abrir um modal ou preencher um container lateral
-        // com as informações detalhadas do produto
-        alert(
-            `Detalhes do produto:\n\nNome: ${produto.nome}\nDescrição: ${produto.descricao}\nPreço: R$ ${produto.preco.toFixed(
-                2
-            )}`
-        )
+        // Preencher os dados do modal
+        document.getElementById('detalhe-nome').textContent = produto.nome
+        document.getElementById('detalhe-categoria').textContent = produto.categoria.charAt(0).toUpperCase() + produto.categoria.slice(1)
+        document.getElementById('detalhe-preco').textContent = `R$ ${produto.preco.toFixed(2)}`
+        document.getElementById('detalhe-descricao').textContent = produto.descricao || 'Sem descrição disponível'
+        
+        // Armazenar o ID do produto no modal para futuras operações
+        const modal = document.getElementById('modalDetalhesProduto')
+        modal.dataset.produtoId = produto.id
+        
+        // TODO: Implementar quando os níveis de acesso estiverem prontos
+        // const usuario = getUsuarioAtual()
+        // if (usuario?.papel === 'admin') {
+        //     document.getElementById('btn-editar-produto').classList.remove('d-none')
+        //     document.getElementById('btn-remover-produto').classList.remove('d-none')
+        // } else {
+        //     document.getElementById('btn-editar-produto').classList.add('d-none')
+        //     document.getElementById('btn-remover-produto').classList.add('d-none')
+        // }
+        
+        // Abrir o modal
+        const modalInstance = new bootstrap.Modal(modal)
+        modalInstance.show()
     }
 
     function mostrarLoading(ativo) {
@@ -165,4 +181,37 @@ document.addEventListener('DOMContentLoaded', async () => {
     function formatarTituloCategoria(categoria) {
         return categoria.charAt(0).toUpperCase() + categoria.slice(1)
     }
+
+    // TODO: Implementar quando os níveis de acesso estiverem prontos
+    // Event listeners para os botões de editar e remover no modal de detalhes
+    // 
+    // document.getElementById('btn-editar-produto').addEventListener('click', () => {
+    //     const produtoId = document.getElementById('modalDetalhesProduto').dataset.produtoId
+    //     // Implementar lógica de edição
+    //     console.log('Editar produto ID:', produtoId)
+    // })
+    // 
+    // document.getElementById('btn-remover-produto').addEventListener('click', async () => {
+    //     const produtoId = document.getElementById('modalDetalhesProduto').dataset.produtoId
+    //     const confirmacao = confirm('Tem certeza que deseja remover este produto?')
+    //     if (confirmacao) {
+    //         try {
+    //             // Fazer requisição DELETE para /api/cardapio/:id
+    //             const response = await fetch(`${BASE_URL}/api/cardapio/${produtoId}`, {
+    //                 method: 'DELETE',
+    //                 headers: {
+    //                     'Authorization': `Bearer ${localStorage.getItem('token')}`
+    //                 }
+    //             })
+    //             if (response.ok) {
+    //                 alert('Produto removido com sucesso!')
+    //                 location.reload()
+    //             } else {
+    //                 throw new Error('Erro ao remover produto')
+    //             }
+    //         } catch (error) {
+    //             alert('Erro ao remover produto: ' + error.message)
+    //         }
+    //     }
+    // })
 })
