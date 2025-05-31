@@ -47,11 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Funções
   async function checkAuthState() {
     try {
-      console.log('🔍 Verificando estado de autenticação...')
-      console.log('📍 URL atual:', window.location.pathname)
-      
       const session = await apiAuth.verificarAutenticacao()
-      console.log('🔐 Sessão encontrada:', !!session)
       
       // Verificar se está na página de login (index.html ou raiz do site)
       const isLoginPage = window.location.pathname.includes('index.html') || 
@@ -59,12 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
                          window.location.pathname.endsWith('/') ||
                          window.location.pathname === ''
       
-      console.log('🏠 É página de login:', isLoginPage)
-      
       if (session && isLoginPage) {
         // Usuário já está logado, redirecionar para a página de pedidos
         const isLembrado = apiAuth.isLembrarLoginAtivo()
-        console.log('💾 Login lembrado ativo:', isLembrado)
         
         const mensagem = isLembrado 
           ? 'Login lembrado ativo! Redirecionando...' 
@@ -72,12 +65,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         showAlert(mensagem, 'success')
         
-        console.log('🔄 Redirecionando para pedidos em 1 segundo...')
         setTimeout(() => {
           window.location.href = './view/pages/pedidos.html'
         }, 1000)
-      } else if (!session && isLoginPage) {
-        console.log('❌ Nenhuma sessão válida encontrada, permanecendo na tela de login')
       }
     } catch (error) {
       console.error('Erro ao verificar autenticação:', error)
