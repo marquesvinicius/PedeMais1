@@ -64,7 +64,12 @@ export async function filtrarPedidosPorMesa(pedidos, mesa) {
 }
 
 export async function criarPedido(pedido) {
+  console.log('🚀 [criarPedido] Iniciando criação de pedido:', pedido)
+  
   const token = localStorage.getItem('token')
+  console.log('🔑 [criarPedido] Token encontrado:', token ? 'SIM' : 'NÃO')
+  console.log('🔍 [criarPedido] Token (primeiros 50 chars):', token ? token.substring(0, 50) + '...' : 'null')
+  console.log('🌍 [criarPedido] URL da API:', `${BASE_URL}/api/pedidos`)
 
   const response = await fetch(`${BASE_URL}/api/pedidos`, {
     method: 'POST',
@@ -75,7 +80,11 @@ export async function criarPedido(pedido) {
     body: JSON.stringify(pedido)
   })
 
+  console.log('📡 [criarPedido] Status da resposta:', response.status)
+  console.log('📡 [criarPedido] Headers da resposta:', Object.fromEntries(response.headers.entries()))
+
   const data = await response.json()
+  console.log('📄 [criarPedido] Dados da resposta:', data)
 
   if (!response.ok) throw new Error(data.erro || 'Erro ao criar pedido.')
   return data
