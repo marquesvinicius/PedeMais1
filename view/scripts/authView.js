@@ -6,13 +6,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('loginForm')
   const emailInput = document.getElementById('emailInput')
   const passwordInput = document.getElementById('passwordInput')
+  const rememberCheck = document.getElementById('rememberCheck')
   const loginBtn = document.getElementById('loginBtn')
   const emailError = document.getElementById('emailError')
   const passwordError = document.getElementById('passwordError')
   const alertContainer = document.getElementById('alertContainer')
+  const loginStatus = document.getElementById('loginStatus')
 
   // Verificar se já está logado
   checkAuthState()
+
+  // Carregar último email se "lembrar login" estiver ativo
+  loadRememberedData()
+
+  // Event listener para mudanças no checkbox
+  if (rememberCheck) {
+    rememberCheck.addEventListener('change', updateLoginStatus)
+  }
 
   // Event listener para o formulário de login
   if (loginForm) {
@@ -27,13 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (logoutBtn) {
     logoutBtn.addEventListener('click', async (e) => {
       e.preventDefault()
-      try {
-        await apiAuth.fazerLogout()
-        window.location.href = '../../index.html'
-      } catch (error) {
-        console.error('Falha ao fazer logout:', error)
-        showAlert('Erro ao sair do sistema. Tente novamente.', 'danger')
-      }
+      await handleLogout()
     })
   }
 
@@ -43,13 +47,70 @@ document.addEventListener('DOMContentLoaded', () => {
   // Funções
   async function checkAuthState() {
     try {
+      console.log('🔍 Verificando estado de autenticação...')
+      console.log('📍 URL atual:', window.location.pathname)
+      
       const session = await apiAuth.verificarAutenticacao()
-      if (session && window.location.pathname.includes('index.html')) {
+      console.log('🔐 Sessão encontrada:', !!session)
+      
+      // Verificar se está na página de login (index.html ou raiz do site)
+      const isLoginPage = window.location.pathname.includes('index.html') || 
+                         window.location.pathname === '/' || 
+                         window.location.pathname.endsWith('/') ||
+                         window.location.pathname === ''
+      
+      console.log('🏠 É página de login:', isLoginPage)
+      
+      if (session && isLoginPage) {
         // Usuário já está logado, redirecionar para a página de pedidos
-        window.location.href = './view/pages/pedidos.html'
+        const isLembrado = apiAuth.isLembrarLoginAtivo()
+        console.log('💾 Login lembrado ativo:', isLembrado)
+        
+        const mensagem = isLembrado 
+          ? 'Login lembrado ativo! Redirecionando...' 
+          : 'Bem-vindo de volta!'
+        
+        showAlert(mensagem, 'success')
+        
+        console.log('🔄 Redirecionando para pedidos em 1 segundo...')
+        setTimeout(() => {
+          window.location.href = './view/pages/pedidos.html'
+        }, 1000)
+      } else if (!session && isLoginPage) {
+        console.log('❌ Nenhuma sessão válida encontrada, permanecendo na tela de login')
       }
     } catch (error) {
       console.error('Erro ao verificar autenticação:', error)
+    }
+  }
+
+  function loadRememberedData() {
+    if (apiAuth.isLembrarLoginAtivo()) {
+      const ultimoEmail = apiAuth.getUltimoEmail()
+      const diasRestantes = apiAuth.getTempoRestanteLembrarLogin()
+      
+      if (ultimoEmail && emailInput) {
+        emailInput.value = ultimoEmail
+        rememberCheck.checked = true
+        
+        // Mostrar status na interface
+        if (loginStatus) {
+          loginStatus.innerHTML = `Login salvo para ${ultimoEmail.split('@')[0]} (${diasRestantes} dias)`
+          loginStatus.className = 'text-success'
+        }
+        
+        // Mostrar informação sobre o login lembrado
+        showAlert(
+          `Bem-vindo de volta! Login lembrado para ${ultimoEmail}. Expira em ${diasRestantes} dias.`, 
+          'info'
+        )
+      }
+    } else {
+      // Mostrar status quando não há login lembrado
+      if (loginStatus) {
+        loginStatus.innerHTML = 'Nenhum login salvo'
+        loginStatus.className = 'text-muted'
+      }
     }
   }
 
@@ -70,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Obter valores do formulário
     const email = emailInput.value.trim()
     const password = passwordInput.value
+    const lembrarLogin = rememberCheck.checked
 
     // Validação básica
     if (!validarFormulario(email, password)) return
@@ -79,22 +141,52 @@ document.addEventListener('DOMContentLoaded', () => {
     loginBtn.disabled = true
 
     try {
-      // Tentativa de login
-      await apiAuth.login(email, password)
+      // Tentativa de login com opção de lembrar
+      await apiAuth.login(email, password, lembrarLogin)
 
       // Login bem-sucedido
-      showAlert('Login realizado com sucesso!', 'success')
+      const mensagem = lembrarLogin 
+        ? 'Login realizado com sucesso! Suas credenciais foram salvas por 30 dias.'
+        : 'Login realizado com sucesso!'
+      
+      showAlert(mensagem, 'success')
 
       // Redirecionar para a página de pedidos após login
       setTimeout(() => {
         window.location.href = './view/pages/pedidos.html'
-      }, 1000)
+      }, 1500)
 
     } catch (error) {
       console.error('Erro ao fazer login:', error)
       showAlert('Falha ao fazer login. Verifique suas credenciais.', 'danger')
       loginBtn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Entrar'
       loginBtn.disabled = false
+    }
+  }
+
+  async function handleLogout() {
+    try {
+      // Verificar se deve esquecer o login
+      const esquecerLogin = confirm(
+        'Deseja esquecer suas credenciais salvas?\n\n' +
+        'Clique "OK" para fazer logout completo\n' +
+        'Clique "Cancelar" para manter login lembrado'
+      )
+      
+      await apiAuth.fazerLogout(esquecerLogin)
+      
+      const mensagem = esquecerLogin 
+        ? 'Logout realizado e credenciais esquecidas.'
+        : 'Logout realizado. Suas credenciais foram mantidas.'
+      
+      showAlert(mensagem, 'success')
+      
+      setTimeout(() => {
+        window.location.href = '../../index.html'
+      }, 1000)
+    } catch (error) {
+      console.error('Falha ao fazer logout:', error)
+      showAlert('Erro ao sair do sistema. Tente novamente.', 'danger')
     }
   }
 
@@ -151,12 +243,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     alertContainer.appendChild(alert)
 
-    // Auto-remover após 5 segundos
+    // Auto-remover após 5 segundos (ou 7 para mensagens de sucesso)
+    const timeout = type === 'success' ? 7000 : 5000
     setTimeout(() => {
       alert.classList.remove('show')
       setTimeout(() => {
         alert.remove()
       }, 150)
-    }, 5000)
+    }, timeout)
+  }
+
+  function updateLoginStatus() {
+    const loginStatus = document.getElementById('loginStatus')
+    if (!loginStatus) return
+    
+    if (rememberCheck.checked) {
+      loginStatus.innerHTML = 'Login será salvo por 30 dias'
+      loginStatus.className = 'text-primary'
+    } else {
+      if (apiAuth.isLembrarLoginAtivo()) {
+        const ultimoEmail = apiAuth.getUltimoEmail()
+        const diasRestantes = apiAuth.getTempoRestanteLembrarLogin()
+        loginStatus.innerHTML = `Login salvo para ${ultimoEmail.split('@')[0]} (${diasRestantes} dias)`
+        loginStatus.className = 'text-success'
+      } else {
+        loginStatus.innerHTML = 'Login apenas para esta sessão'
+        loginStatus.className = 'text-muted'
+      }
+    }
   }
 })
