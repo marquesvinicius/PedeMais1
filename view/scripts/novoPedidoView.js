@@ -1,7 +1,9 @@
 // view/scripts/novoPedidoView.js
 import * as apiPedidos from './api/apiPedidos.js'
+import * as apiAuth from './api/apiAuth.js'
 
 let itensSelecionados = []
+let produtos = []
 
 const mesaSelect = document.getElementById('selectMesa')
 const resumoContainer = document.getElementById('resumo-pedido')
@@ -10,17 +12,151 @@ const btnFinalizar = document.getElementById('btn-finalizar-pedido')
 const modalMesa = document.getElementById('modal-mesa')
 const modalResumo = document.getElementById('modal-resumo')
 const btnConfirmar = document.getElementById('btn-confirmar-pedido')
+const cardapioContainer = document.getElementById('cardapio-container')
+const loadingSpinner = document.getElementById('loading-spinner')
 
-// Adiciona evento a todos os botões "adicionar"
-document.querySelectorAll('.btn-adicionar').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const card = btn.closest('.produto-card')
-        const nome = card.dataset.nome
-        const preco = parseFloat(card.dataset.preco)
-        itensSelecionados.push({ nome, preco })
-        atualizarResumo()
-    })
+// Inicializar quando a página carregar
+document.addEventListener('DOMContentLoaded', async () => {
+    // Verificar autenticação
+    await apiAuth.verificarAutenticacao()
+    
+    // Carregar produtos do cardápio
+    await carregarCardapio()
 })
+
+// Carregar produtos via API
+async function carregarCardapio() {
+    try {
+        console.log('Carregando cardápio via API...')
+        
+        // TODO: Implementar endpoint /api/produtos na API
+        // Por enquanto, usar produtos hardcoded
+        produtos = [
+            {
+                id: 1,
+                nome: 'Arroz',
+                descricao: 'Arroz branco tradicional',
+                preco: 5.00,
+                categoria: 'Acompanhamentos',
+                disponibilidade: true
+            }
+        ]
+        
+        console.log('Produtos carregados:', produtos)
+        
+        // Renderizar produtos
+        renderizarCardapio(produtos)
+        
+    } catch (error) {
+        console.error('Erro ao carregar cardápio:', error)
+        mostrarErro('Erro ao carregar cardápio.')
+    } finally {
+        loadingSpinner.style.display = 'none'
+    }
+}
+
+// Renderizar cardápio dinamicamente
+function renderizarCardapio(produtos) {
+    // Limpar container (remover placeholders)
+    cardapioContainer.innerHTML = ''
+    
+    if (produtos.length === 0) {
+        cardapioContainer.innerHTML = `
+            <div class="alert alert-warning">
+                <h5>Nenhum produto disponível</h5>
+                <p>Não há produtos cadastrados no cardápio no momento.</p>
+            </div>
+        `
+        return
+    }
+    
+    // Agrupar produtos por categoria
+    const categorias = {}
+    produtos.forEach(produto => {
+        const categoria = produto.categoria || 'Outros'
+        if (!categorias[categoria]) {
+            categorias[categoria] = []
+        }
+        categorias[categoria].push(produto)
+    })
+    
+    // Renderizar cada categoria
+    Object.keys(categorias).forEach(categoria => {
+        const categoriaDiv = document.createElement('div')
+        categoriaDiv.className = 'categoria-container mb-4'
+        
+        categoriaDiv.innerHTML = `
+            <h4 class="categoria-titulo">${categoria}</h4>
+            <div class="row" id="categoria-${categoria.toLowerCase()}">
+            </div>
+        `
+        
+        cardapioContainer.appendChild(categoriaDiv)
+        
+        const produtosRow = categoriaDiv.querySelector('.row')
+        
+        // Renderizar produtos da categoria
+        categorias[categoria].forEach(produto => {
+            const produtoCard = criarCardProduto(produto)
+            produtosRow.appendChild(produtoCard)
+        })
+    })
+    
+    // Configurar event listeners para os botões de adicionar
+    configurarEventListeners()
+}
+
+// Criar card de produto
+function criarCardProduto(produto) {
+    const col = document.createElement('div')
+    col.className = 'col-md-4 mb-3'
+    
+    col.innerHTML = `
+        <div class="card produto-card" data-id="${produto.id}" data-nome="${produto.nome}" data-preco="${produto.preco}">
+            <div class="card-body">
+                <h5 class="card-title">${produto.nome}</h5>
+                <p class="card-text">${produto.descricao || 'Sem descrição'}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-primary fw-bold">R$ ${produto.preco.toFixed(2)}</span>
+                    <div class="produto-acoes">
+                        <button class="btn btn-sm btn-primary btn-adicionar">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+    
+    return col
+}
+
+// Configurar event listeners
+function configurarEventListeners() {
+    // Adiciona evento a todos os botões "adicionar"
+    document.querySelectorAll('.btn-adicionar').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const card = btn.closest('.produto-card')
+            const nome = card.dataset.nome
+            const preco = parseFloat(card.dataset.preco)
+            const itemCardapioId = parseInt(card.dataset.id) // ID do produto no cardápio
+            
+            itensSelecionados.push({ 
+                nome, 
+                preco, 
+                quantidade: 1,
+                item_cardapio_id: itemCardapioId
+            })
+            atualizarResumo()
+        })
+    })
+}
+
+// Mostrar erro
+function mostrarErro(mensagem) {
+    console.error(mensagem)
+    // Você pode implementar um toast ou alert aqui
+}
 
 // Atualiza visual do resumo do pedido
 function atualizarResumo() {
@@ -82,6 +218,7 @@ btnConfirmar.addEventListener('click', async () => {
         alert('Pedido criado com sucesso!')
         window.location.href = 'pedidos.html'
     } catch (e) {
-        alert('Erro ao criar pedido.')
+        console.error('Erro ao criar pedido:', e)
+        alert('Erro ao criar pedido: ' + e.message)
     }
 })

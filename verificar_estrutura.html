@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificar Estrutura - PedeMais</title>
+</head>
+<body>
+    <h1>Verificar Estrutura da Tabela itens_pedido</h1>
+    
+    <button id="verificarEstrutura">Verificar Estrutura</button>
+    <button id="listarTabelas">Listar Todas as Tabelas</button>
+    
+    <div id="resultado"></div>
+
+    <!-- Supabase JavaScript Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // Aguardar o carregamento do Supabase e inicializar
+        let supabaseClient = null;
+        
+        function initSupabase() {
+            const SUPABASE_URL = 'https://kecthdahzuzjoilfntiq.supabase.co'
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtlY3RoZGFoenV6am9pbGZudGlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5NjEsImV4cCI6MjA2MTk1Nzk2MX0.3jFEYqQFr00hE4jmNtE7iZjXqbei5MgpVD_IRwiGKkw'
+            
+            if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+                console.log('Supabase inicializado:', supabaseClient)
+                return true
+            }
+            return false
+        }
+        
+        // Tentar inicializar quando a página carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (initSupabase()) {
+                    document.getElementById('resultado').innerHTML = '<p style="color: green;">✅ Supabase inicializado com sucesso!</p>'
+                } else {
+                    document.getElementById('resultado').innerHTML = '<p style="color: red;">❌ Erro ao inicializar Supabase</p>'
+                }
+            }, 1000) // Aguardar 1 segundo para garantir que o script carregou
+        })
+        
+        const resultado = document.getElementById('resultado');
+        
+        document.getElementById('verificarEstrutura').addEventListener('click', async () => {
+            if (!supabaseClient) {
+                resultado.innerHTML = '<p style="color: red;">❌ Supabase não inicializado</p>'
+                return
+            }
+            
+            try {
+                resultado.innerHTML = '<p>Verificando estrutura...</p>';
+                
+                // Tentar fazer uma query simples para ver se a tabela existe
+                const { data, error } = await supabaseClient
+                    .from('itens_pedido')
+                    .select('*')
+                    .limit(1);
+
+                if (error) {
+                    resultado.innerHTML = `
+                        <h3>❌ Erro ao acessar tabela itens_pedido:</h3>
+                        <p style="color: red;">${error.message}</p>
+                        <p><strong>Código:</strong> ${error.code}</p>
+                        <p><strong>Detalhes:</strong> ${error.details}</p>
+                        <p><strong>Hint:</strong> ${error.hint}</p>
+                    `;
+                    return;
+                }
+                
+                resultado.innerHTML = `
+                    <h3>✅ Tabela itens_pedido existe!</h3>
+                    <p>Registros encontrados: ${data.length}</p>
+                    ${data.length > 0 ? `<pre>${JSON.stringify(data, null, 2)}</pre>` : '<p>Tabela vazia</p>'}
+                `;
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                resultado.innerHTML = `<p style="color: red;">❌ Erro: ${error.message}</p>`;
+            }
+        });
+        
+        document.getElementById('listarTabelas').addEventListener('click', async () => {
+            if (!supabaseClient) {
+                resultado.innerHTML = '<p style="color: red;">❌ Supabase não inicializado</p>'
+                return
+            }
+            
+            try {
+                resultado.innerHTML = '<p>Listando tabelas...</p>';
+                
+                // Tentar listar algumas tabelas conhecidas
+                const tabelas = ['pedidos', 'itens_pedido', 'produtos', 'usuarios'];
+                let resultados = [];
+                
+                for (const tabela of tabelas) {
+                    try {
+                        const { data, error } = await supabaseClient
+                            .from(tabela)
+                            .select('*')
+                            .limit(1);
+                        
+                        if (error) {
+                            resultados.push(`❌ ${tabela}: ${error.message}`);
+                        } else {
+                            resultados.push(`✅ ${tabela}: OK (${data.length} registros na amostra)`);
+                        }
+                    } catch (e) {
+                        resultados.push(`❌ ${tabela}: ${e.message}`);
+                    }
+                }
+                
+                resultado.innerHTML = `
+                    <h3>Status das Tabelas:</h3>
+                    <ul>
+                        ${resultados.map(r => `<li>${r}</li>`).join('')}
+                    </ul>
+                `;
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                resultado.innerHTML = `<p style="color: red;">❌ Erro: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html> 

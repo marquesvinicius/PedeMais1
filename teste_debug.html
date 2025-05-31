@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Debug - PedeMais</title>
+</head>
+<body>
+    <h1>Teste de Debug - Inserção na tabela itens_pedido</h1>
+    
+    <button id="testarInsercao">Testar Inserção de Pedido</button>
+    <button id="verificarTabela">Verificar Tabela itens_pedido</button>
+    <button id="verificarCardapio">Verificar Tabela produtos</button>
+    <button id="testarJoin">Testar Join itens_pedido + produtos</button>
+    <button id="limparTestes" style="background-color: #dc3545; color: white;">Limpar Dados de Teste</button>
+    
+    <div id="resultado"></div>
+
+    <!-- Supabase JavaScript Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // Aguardar o carregamento do Supabase e inicializar
+        let supabaseClient = null;
+        
+        function initSupabase() {
+            const SUPABASE_URL = 'https://kecthdahzuzjoilfntiq.supabase.co'
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtlY3RoZGFoenV6am9pbGZudGlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5NjEsImV4cCI6MjA2MTk1Nzk2MX0.3jFEYqQFr00hE4jmNtE7iZjXqbei5MgpVD_IRwiGKkw'
+            
+            if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+                console.log('Supabase inicializado:', supabaseClient)
+                return true
+            }
+            return false
+        }
+        
+        // Tentar inicializar quando a página carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (initSupabase()) {
+                    document.getElementById('resultado').innerHTML = '<p style="color: green;">✅ Supabase inicializado com sucesso!</p>'
+                } else {
+                    document.getElementById('resultado').innerHTML = '<p style="color: red;">❌ Erro ao inicializar Supabase</p>'
+                }
+            }, 1000) // Aguardar 1 segundo para garantir que o script carregou
+        })
+        
+        const resultado = document.getElementById('resultado');
+        
+        document.getElementById('verificarCardapio').addEventListener('click', async () => {
+            if (!supabaseClient) {
+                resultado.innerHTML = '<p style="color: red;">❌ Supabase não inicializado</p>'
+                return
+            }
+            
+            try {
+                resultado.innerHTML = '<p>Verificando tabela produtos...</p>';
+                
+                const { data, error } = await supabaseClient
+                    .from('produtos')
+                    .select('*')
+                    .limit(5);
+
+                if (error) {
+                    resultado.innerHTML = `
+                        <h3>❌ Erro ao acessar tabela produtos:</h3>
+                        <p style="color: red;">${error.message}</p>
+                        <p><strong>Código:</strong> ${error.code}</p>
+                    `;
+                    return;
+                }
+                
+                resultado.innerHTML = `
+                    <h3>✅ Tabela produtos existe!</h3>
+                    <p>Registros encontrados: ${data.length}</p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                resultado.innerHTML = `<p style="color: red;">❌ Erro: ${error.message}</p>`;
+            }
+        });
+        
+        document.getElementById('testarJoin').addEventListener('click', async () => {
+            if (!supabaseClient) {
+                resultado.innerHTML = '<p style="color: red;">❌ Supabase não inicializado</p>'
+                return
+            }
+            
+            try {
+                resultado.innerHTML = '<p>Testando join entre itens_pedido e produtos...</p>';
+                
+                const { data, error } = await supabaseClient
+                    .from('itens_pedido')
+                    .select(`
+                        *,
+                        produtos:item_cardapio_id (
+                            nome,
+                            preco
+                        )
+                    `)
+                    .limit(5);
+
+                if (error) {
+                    resultado.innerHTML = `
+                        <h3>❌ Erro no join:</h3>
+                        <p style="color: red;">${error.message}</p>
+                        <p><strong>Código:</strong> ${error.code}</p>
+                    `;
+                    return;
+                }
+                
+                resultado.innerHTML = `
+                    <h3>✅ Join funcionando!</h3>
+                    <p>Registros encontrados: ${data.length}</p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                resultado.innerHTML = `<p style="color: red;">❌ Erro: ${error.message}</p>`;
+            }
+        });
+        
+        document.getElementById('testarInsercao').addEventListener('click', async () => {
+            if (!supabaseClient) {
+                resultado.innerHTML = '<p style="color: red;">❌ Supabase não inicializado</p>'
+                return
+            }
+            
+            try {
+                resultado.innerHTML = '<p>Testando inserção...</p>';
+                
+                // 1. Primeiro, criar um pedido de teste
+                const { data: pedidoData, error: pedidoError } = await supabaseClient
+                    .from('pedidos')
+                    .insert([{
+                        mesa: 99,
+                        status: 'pendente',
+                        valor_total: 25.50,
+                        observacoes: 'Teste de debug',
+                        criado_por: null // Usar null em vez de string inválida
+                    }])
+                    .select()
+                    .single();
+
+                if (pedidoError) {
+                    throw pedidoError;
+                }
+                
+                console.log('Pedido criado:', pedidoData);
+                
+                // 2. Inserir itens na tabela itens_pedido
+                const itensParaInserir = [
+                    {
+                        pedido_id: pedidoData.id,
+                        item_cardapio_id: 1, // ID do produto Arroz
+                        quantidade: 2,
+                        preco_unitario: 5.00
+                    },
+                    {
+                        pedido_id: pedidoData.id,
+                        item_cardapio_id: null, // Item personalizado
+                        quantidade: 1,
+                        preco_unitario: 10.00
+                    }
+                ];
+
+                const { data: itensData, error: itensError } = await supabaseClient
+                    .from('itens_pedido')
+                    .insert(itensParaInserir)
+                    .select();
+
+                if (itensError) {
+                    console.error('Erro ao inserir itens:', itensError);
+                    resultado.innerHTML = `<p style="color: red;">Erro ao inserir itens: ${itensError.message}</p>`;
+                    return;
+                }
+                
+                console.log('Itens inseridos:', itensData);
+                resultado.innerHTML = `
+                    <p style="color: green;">✅ Sucesso!</p>
+                    <p>Pedido ID: ${pedidoData.id}</p>
+                    <p>Itens inseridos: ${itensData.length}</p>
+                    <pre>${JSON.stringify(itensData, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                console.error('Erro no teste:', error);
+                resultado.innerHTML = `<p style="color: red;">❌ Erro: ${error.message}</p>`;
+            }
+        });
+        
+        document.getElementById('verificarTabela').addEventListener('click', async () => {
+            if (!supabaseClient) {
+                resultado.innerHTML = '<p style="color: red;">❌ Supabase não inicializado</p>'
+                return
+            }
+            
+            try {
+                resultado.innerHTML = '<p>Verificando tabela...</p>';
+                
+                const { data, error } = await supabaseClient
+                    .from('itens_pedido')
+                    .select('*')
+                    .limit(10);
+
+                if (error) {
+                    throw error;
+                }
+                
+                resultado.innerHTML = `
+                    <h3>Registros na tabela itens_pedido:</h3>
+                    <p>Total encontrado: ${data.length}</p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                console.error('Erro ao verificar tabela:', error);
+                resultado.innerHTML = `<p style="color: red;">❌ Erro: ${error.message}</p>`;
+            }
+        });
+        
+        document.getElementById('limparTestes').addEventListener('click', async () => {
+            if (!supabaseClient) {
+                resultado.innerHTML = '<p style="color: red;">❌ Supabase não inicializado</p>'
+                return
+            }
+            
+            if (!confirm('Tem certeza que deseja limpar todos os dados de teste?')) {
+                return
+            }
+            
+            try {
+                resultado.innerHTML = '<p>Limpando dados de teste...</p>';
+                
+                // Deletar itens de teste
+                const { error: itensError } = await supabaseClient
+                    .from('itens_pedido')
+                    .delete()
+                    .neq('id', 0); // Deletar todos
+                
+                if (itensError) {
+                    console.error('Erro ao deletar itens:', itensError);
+                }
+                
+                // Deletar pedidos de teste
+                const { error: pedidosError } = await supabaseClient
+                    .from('pedidos')
+                    .delete()
+                    .eq('mesa', 99); // Deletar pela mesa de teste
+                
+                if (pedidosError) {
+                    console.error('Erro ao deletar pedidos:', pedidosError);
+                }
+                
+                resultado.innerHTML = `
+                    <p style="color: green;">✅ Dados de teste limpos!</p>
+                `;
+                
+            } catch (error) {
+                console.error('Erro ao limpar dados:', error);
+                resultado.innerHTML = `<p style="color: red;">❌ Erro: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html> 

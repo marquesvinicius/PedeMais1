@@ -1,6 +1,5 @@
 import { BASE_URL } from '../config.js'
 
-
 export async function buscarPedidos() {
   const token = localStorage.getItem('token')
   const response = await fetch(`${BASE_URL}/api/pedidos`, {
@@ -17,10 +16,7 @@ export async function buscarPedidoPorId(id) {
   })
   
   if (!response.ok) {
-    if (response.status === 404) {
-      return null
-    }
-    throw new Error('Erro ao buscar pedido')
+    throw new Error('Pedido não encontrado')
   }
   
   const data = await response.json()
@@ -83,4 +79,18 @@ export async function criarPedido(pedido) {
 
   if (!response.ok) throw new Error(data.erro || 'Erro ao criar pedido.')
   return data
+}
+
+export async function buscarItensPedido(pedidoId) {
+  const token = localStorage.getItem('token')
+  const response = await fetch(`${BASE_URL}/api/pedidos/${pedidoId}/itens`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  
+  if (!response.ok) {
+    return []
+  }
+  
+  const data = await response.json()
+  return data.itens || []
 }

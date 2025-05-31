@@ -30,34 +30,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             pedidoContent.style.display = 'none'
             erroContainer.style.display = 'none'
 
-            let pedido = null
+            console.log('Carregando pedido ID:', id)
 
-            try {
-                // Tentar buscar via API primeiro
-                pedido = await apiPedidos.buscarPedidoPorId(id)
-            } catch (error) {
-                console.log('API indisponível, tentando Supabase direto...')
-                
-                // Fallback: buscar diretamente do Supabase usando a instância global
-                if (window.supabase && typeof window.supabase.createClient === 'function') {
-                    // Importar dinamicamente a instância do Supabase já configurada
-                    const { supabase } = await import('../../supabase.js')
-                    
-                    const { data, error } = await supabase
-                        .from('pedidos')
-                        .select('*')
-                        .eq('id', id)
-                        .single()
-                    
-                    if (error) {
-                        console.error('Erro no Supabase:', error)
-                        throw new Error('Pedido não encontrado')
-                    }
-                    
-                    pedido = data
-                    showAlert('Dados carregados diretamente do banco (API indisponível)', 'warning')
-                }
-            }
+            // Buscar pedido (com fallback automático para Supabase)
+            const pedido = await apiPedidos.buscarPedidoPorId(id)
+            
+            console.log('Pedido carregado:', pedido)
             
             if (!pedido) {
                 mostrarErro('Pedido não encontrado')
@@ -68,7 +46,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             
         } catch (error) {
             console.error('Erro ao carregar pedido:', error)
-            mostrarErro('Erro ao carregar dados do pedido')
+            mostrarErro('Erro ao carregar dados do pedido: ' + error.message)
         } finally {
             loadingSpinner.style.display = 'none'
         }
@@ -90,15 +68,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Resumo
         document.getElementById('pedido-mesa').textContent = pedido.mesa
         
-        // Processar itens
-        const itens = processarItens(pedido.itens)
-        document.getElementById('pedido-quantidade').textContent = `${itens.length} ${itens.length === 1 ? 'item' : 'itens'}`
-        
-        const total = calcularTotal(itens)
-        document.getElementById('pedido-total').textContent = formatarMoeda(total)
-
-        // Renderizar itens
-        renderizarItens(itens)
+        // Buscar e processar itens
+        carregarItens(pedido)
 
         // Observações
         if (pedido.observacoes && pedido.observacoes.trim()) {
@@ -114,6 +85,40 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Mostrar conteúdo
         pedidoContent.style.display = 'block'
+    }
+
+    async function carregarItens(pedido) {
+        try {
+            console.log('Carregando itens para pedido:', pedido.id)
+            
+            // Buscar itens da tabela itens_pedido
+            let itens = await apiPedidos.buscarItensPedido(pedido.id)
+            console.log('Itens da tabela itens_pedido:', itens)
+            
+            // Se não encontrou itens na tabela itens_pedido
+            if (itens.length === 0) {
+                console.log('Nenhum item encontrado na tabela itens_pedido')
+                showAlert('Este pedido não possui itens detalhados. A tabela itens_pedido está vazia para este pedido.', 'warning')
+            }
+            
+            // Atualizar interface
+            document.getElementById('pedido-quantidade').textContent = `${itens.length} ${itens.length === 1 ? 'item' : 'itens'}`
+            
+            const total = calcularTotal(itens)
+            document.getElementById('pedido-total').textContent = formatarMoeda(total)
+
+            // Renderizar itens
+            renderizarItens(itens)
+            
+        } catch (error) {
+            console.error('Erro ao carregar itens:', error)
+            
+            // Mostrar erro
+            document.getElementById('pedido-quantidade').textContent = '0 itens'
+            document.getElementById('pedido-total').textContent = formatarMoeda(0)
+            renderizarItens([])
+            showAlert('Erro ao carregar itens do pedido: ' + error.message, 'danger')
+        }
     }
 
     function processarItens(itensString) {
