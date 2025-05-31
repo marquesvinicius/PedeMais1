@@ -1,1 +1,40 @@
+# Variáveis de ambiente
 .env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Arquivos de configuração sensíveis
+config.local.js
+secrets.js
+keys.js
+
+# Logs
+*.log
+logs/
+
+# Arquivos temporários
+*.tmp
+*.temp
+
+# Dependências
+node_modules/
+
+# Build
+dist/
+build/
+
+# Cache
+.cache/
+.parcel-cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

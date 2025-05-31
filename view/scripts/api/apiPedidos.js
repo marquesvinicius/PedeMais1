@@ -10,19 +10,54 @@ export async function buscarPedidos() {
   return data.pedidos || []
 }
 
+export async function buscarPedidoPorId(id) {
+  const token = localStorage.getItem('token')
+  const response = await fetch(`${BASE_URL}/api/pedidos/${id}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  
+  if (!response.ok) {
+    if (response.status === 404) {
+      return null
+    }
+    throw new Error('Erro ao buscar pedido')
+  }
+  
+  const data = await response.json()
+  return data.pedido || data
+}
+
 export async function atualizarStatusPedido(id, novoStatus) {
   const token = localStorage.getItem('token')
-  await fetch(`${BASE_URL}/api/pedidos/${id}`, {
+  const response = await fetch(`${BASE_URL}/api/pedidos/${id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`
     },
-    body: JSON.stringify({ status: novoStatus })  // <- está sendo enviado corretamente?
+    body: JSON.stringify({ status: novoStatus })
   })
-
+  
+  if (!response.ok) {
+    throw new Error('Erro ao atualizar status do pedido')
+  }
+  
+  return await response.json()
 }
 
+export async function excluirPedido(id) {
+  const token = localStorage.getItem('token')
+  const response = await fetch(`${BASE_URL}/api/pedidos/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  
+  if (!response.ok) {
+    throw new Error('Erro ao excluir pedido')
+  }
+  
+  return await response.json()
+}
 
 export async function filtrarPedidosPorStatus(pedidos, status) {
   return status === '' ? pedidos : pedidos.filter(p => p.status === status)

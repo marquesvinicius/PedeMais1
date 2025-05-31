@@ -138,7 +138,29 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Adicionar ID do pedido para referência
       const card = clone.querySelector('.pedido-card')
-      if (card) card.dataset.pedidoId = pedido.id
+      if (card) {
+        card.dataset.pedidoId = pedido.id
+        
+        // Tornar o card clicável
+        card.style.cursor = 'pointer'
+        card.addEventListener('click', (e) => {
+          // Verificar se o clique não foi em um botão
+          if (!e.target.closest('button')) {
+            window.location.href = `ver-pedido.html?id=${pedido.id}`
+          }
+        })
+        
+        // Adicionar efeito hover
+        card.addEventListener('mouseenter', () => {
+          card.style.transform = 'translateY(-2px)'
+          card.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)'
+        })
+        
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = 'translateY(0)'
+          card.style.boxShadow = ''
+        })
+      }
 
       // Adicionar botões de ação para alterar status
       const actionButtons = clone.querySelector('.action-buttons')
@@ -154,22 +176,49 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const status = pedido.status.toLowerCase()
 
+    // Botão "Ver Detalhes" sempre presente
+    const detalhesBtn = document.createElement('button')
+    detalhesBtn.className = 'btn btn-outline-primary btn-sm me-2'
+    detalhesBtn.innerHTML = '<i class="fas fa-eye me-1"></i>Ver Detalhes'
+    detalhesBtn.addEventListener('click', (e) => {
+      e.stopPropagation() // Evitar que o clique no card seja acionado
+      window.location.href = `ver-pedido.html?id=${pedido.id}`
+    })
+    container.appendChild(detalhesBtn)
+
     // Adicionar botões apropriados com base no status atual
     if (status === 'pendente') {
       // Botão para mudar para "Em preparo"
       const iniciarBtn = document.createElement('button')
       iniciarBtn.className = 'btn btn-warning btn-sm me-2'
-      iniciarBtn.textContent = 'Iniciar Preparo'
-      iniciarBtn.addEventListener('click', () => alterarStatus(pedido.id, 'em preparo'))
+      iniciarBtn.innerHTML = '<i class="fas fa-play me-1"></i>Iniciar'
+      iniciarBtn.addEventListener('click', (e) => {
+        e.stopPropagation()
+        alterarStatus(pedido.id, 'em preparo')
+      })
       container.appendChild(iniciarBtn)
     }
     else if (status === 'em preparo') {
       // Botão para marcar como "Pronto"
       const concluirBtn = document.createElement('button')
       concluirBtn.className = 'btn btn-success btn-sm'
-      concluirBtn.textContent = 'Marcar Pronto'
-      concluirBtn.addEventListener('click', () => alterarStatus(pedido.id, 'pronto'))
+      concluirBtn.innerHTML = '<i class="fas fa-check me-1"></i>Pronto'
+      concluirBtn.addEventListener('click', (e) => {
+        e.stopPropagation()
+        alterarStatus(pedido.id, 'pronto')
+      })
       container.appendChild(concluirBtn)
+    }
+    else if (status === 'pronto') {
+      // Botão para marcar como "Entregue"
+      const entregarBtn = document.createElement('button')
+      entregarBtn.className = 'btn btn-info btn-sm'
+      entregarBtn.innerHTML = '<i class="fas fa-truck me-1"></i>Entregar'
+      entregarBtn.addEventListener('click', (e) => {
+        e.stopPropagation()
+        alterarStatus(pedido.id, 'entregue')
+      })
+      container.appendChild(entregarBtn)
     }
   }
 
