@@ -18,6 +18,13 @@ const loadingSpinner = document.getElementById('loading-spinner')
 // Inicializar quando a página carregar
 document.addEventListener('DOMContentLoaded', async () => {
     // Verificar autenticação
+    const token = localStorage.getItem('token')
+    console.log('🔐 [novoPedido] Status de autenticação:', {
+        tokenExiste: !!token,
+        dominio: window.location.hostname,
+        urlCompleta: window.location.href
+    })
+    
     await apiAuth.verificarAutenticacao()
     
     // Carregar produtos do cardápio
