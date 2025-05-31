@@ -43,6 +43,7 @@
             </div>
         </div>
     </nav>
+
     <!-- Layout -->
     <div class="container-fluid">
         <div class="row">
@@ -56,8 +57,19 @@
                     <label for="data-final" class="filtro-label">Data Final:</label>
                     <input type="date" id="data-final" class="form-control mb-3" />
 
+                    <label for="tipo-relatorio" class="filtro-label">Tipo de Relatório:</label>
+                    <select id="tipo-relatorio" class="form-select mb-3">
+                        <option value="geral">Relatório Geral</option>
+                        <option value="vendas">Resumo de Vendas</option>
+                        <option value="mesas">Por Mesa</option>
+                    </select>
+
                     <button class="btn btn-primary w-100" id="btn-gerar-relatorio">
                         <i class="fas fa-chart-line me-2"></i>Gerar Relatório
+                    </button>
+
+                    <button class="btn btn-outline-secondary w-100 mt-2" id="btn-limpar-filtros">
+                        <i class="fas fa-eraser me-2"></i>Limpar Filtros
                     </button>
                 </div>
             </div>
@@ -65,20 +77,61 @@
             <!-- Conteúdo Principal -->
             <div class="col-md-9 col-lg-10 content">
                 <h2 class="mb-4">Relatórios de Pedidos</h2>
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped align-middle text-center">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Data</th>
-                                <th>Cliente</th>
-                                <th>Pedido</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabela-relatorio">
-                            <!-- Dados gerados pelo JavaScript -->
-                        </tbody>
-                    </table>
+
+                <!-- Cards de Resumo -->
+                <div class="row mb-4" id="cards-resumo" style="display: none;">
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-shopping-cart fa-2x text-primary mb-2"></i>
+                                <h5 class="card-title">Total de Pedidos</h5>
+                                <h3 class="text-primary" id="total-pedidos">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-dollar-sign fa-2x text-success mb-2"></i>
+                                <h5 class="card-title">Total de Vendas</h5>
+                                <h3 class="text-success" id="total-vendas">R$ 0,00</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-chart-line fa-2x text-info mb-2"></i>
+                                <h5 class="card-title">Ticket Médio</h5>
+                                <h3 class="text-info" id="ticket-medio">R$ 0,00</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-calendar fa-2x text-warning mb-2"></i>
+                                <h5 class="card-title">Período</h5>
+                                <p class="text-warning mb-0" id="periodo-relatorio">-</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spinner de carregamento -->
+                <div class="text-center my-5" id="loading-spinner" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                    <p class="mt-2">Gerando relatório...</p>
+                </div>
+
+                <!-- Área de conteúdo do relatório -->
+                <div id="conteudo-relatorio">
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Selecione os filtros e clique em "Gerar Relatório" para visualizar os dados.
+                    </div>
                 </div>
             </div>
         </div>

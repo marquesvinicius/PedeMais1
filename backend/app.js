@@ -6,6 +6,7 @@ const authRoutes = require('./routes/auth');
 const pedidosRoutes = require('./routes/pedidos');
 const cardapioRoutes = require('./routes/cardapio');
 const usuarioRoutes = require('./routes/usuarioRoutes');
+const relatoriosRoutes = require('./routes/relatorios');
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/pedidos', pedidosRoutes);
 app.use('/api/cardapio', cardapioRoutes);
 app.use('/api/usuarios', usuarioRoutes);
+app.use('/api/relatorios', relatoriosRoutes);
 
 // Comentado ou removido para testes. A inicialização do servidor
 // deve ocorrer em um arquivo separado (ex: server.js) que não é importado pelos testes.
