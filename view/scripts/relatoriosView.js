@@ -610,12 +610,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function getStatusColor(status) {
-        switch (status.toLowerCase()) {
+        const statusLimpo = status ? status.toString().toLowerCase().trim() : ''
+        
+        switch (statusLimpo) {
             case 'pendente': return 'warning'
-            case 'em preparo': return 'danger'
+            case 'em preparo': return 'warning-preparo'
             case 'pronto': return 'success'
             case 'entregue': return 'primary'
-            case 'cancelado': return 'secondary'
+            case 'cancelado': return 'danger'
             default: return 'secondary'
         }
     }

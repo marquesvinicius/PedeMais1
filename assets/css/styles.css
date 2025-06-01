@@ -530,6 +530,11 @@ body:has(.cadastro-container) {
     border-radius: var(--border-radius-large);
     box-shadow: var(--sombra-hover);
     border: none;
+    transition: box-shadow 0.3s ease;
+}
+
+.login-card:hover {
+    box-shadow: 0 12px 35px rgba(111, 66, 193, 0.2);
 }
 
 .login-card .card-header {
@@ -1202,8 +1207,13 @@ body:has(.cadastro-container) .auth-content {
     color: #000 !important;
 }
 
-.badge.bg-danger {
+.badge.bg-warning-preparo {
     background-color: var(--cor-preparo) !important;
+    color: #fff !important;
+}
+
+.badge.bg-danger {
+    background-color: var(--cor-cancelado) !important;
     color: #fff !important;
 }
 
@@ -1218,7 +1228,7 @@ body:has(.cadastro-container) .auth-content {
 }
 
 .badge.bg-secondary {
-    background-color: var(--cor-cancelado) !important;
+    background-color: var(--cor-entregue) !important;
     color: #fff !important;
 }
 
@@ -1227,8 +1237,12 @@ body:has(.cadastro-container) .auth-content {
     background-color: var(--cor-pendente) !important;
 }
 
-.progress-bar.bg-danger {
+.progress-bar.bg-warning-preparo {
     background-color: var(--cor-preparo) !important;
+}
+
+.progress-bar.bg-danger {
+    background-color: var(--cor-cancelado) !important;
 }
 
 .progress-bar.bg-success {
@@ -1240,7 +1254,7 @@ body:has(.cadastro-container) .auth-content {
 }
 
 .progress-bar.bg-secondary {
-    background-color: var(--cor-texto-light) !important;
+    background-color: var(--cor-entregue) !important;
 }
 
 /* === BOTÃO FLUTUANTE === */
@@ -1488,4 +1502,13 @@ body:has(.cadastro-container) .auth-content {
 
 .content-grow.has-content {
     transition: justify-content 0.3s ease;
+}
+
+/* === CARD DE CADASTRO === */
+.cadastro-container .card.shadow-sm {
+    transition: box-shadow 0.3s ease;
+}
+
+.cadastro-container .card.shadow-sm:hover {
+    box-shadow: 0 12px 35px rgba(111, 66, 193, 0.2) !important;
 }
