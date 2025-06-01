@@ -48,6 +48,7 @@ body {
     flex-direction: column;
     margin: 0;
     padding: 0;
+    padding-top: 100px; /* Compensar altura da navbar fixa */
 }
 
 /* === ESTILOS DO NAVBAR === */
@@ -56,6 +57,12 @@ body {
     box-shadow: var(--sombra-suave);
     padding: 0.8rem 0;
     border-bottom: 3px solid var(--cor-primaria-hover);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030;
+    width: 100%;
 }
 
 .navbar-brand {
@@ -128,6 +135,22 @@ body {
     color: var(--cor-secundaria);
     transform: translateY(-2px);
     box-shadow: var(--sombra-hover);
+}
+
+.btn-primary:disabled,
+.btn-primary.disabled {
+    background-color: var(--cor-primaria) !important;
+    border-color: var(--cor-primaria) !important;
+    color: var(--cor-secundaria) !important;
+    opacity: 0.8;
+}
+
+.btn-primary:disabled:hover,
+.btn-primary.disabled:hover {
+    background-color: var(--cor-primaria) !important;
+    border-color: var(--cor-primaria) !important;
+    color: var(--cor-secundaria) !important;
+    transform: none;
 }
 
 .btn-outline-primary {
@@ -378,9 +401,9 @@ button:has(i.fa-eye):hover {
 .sidebar {
     background-color: var(--cor-secundaria);
     border-right: 1px solid #dee2e6;
-    height: calc(100vh - 75px);
+    height: calc(100vh - 100px);
     position: sticky;
-    top: 75px;
+    top: 100px;
     padding: 2rem 1.5rem;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
 }
@@ -395,13 +418,55 @@ button:has(i.fa-eye):hover {
 .content {
     padding: 2rem;
     flex: 1;
+    padding-top: 3rem; /* Mais espaço do topo para títulos h2 */
 }
 
 /* === LOGIN/PÁGINA INICIAL === */
+/* Layout principal para páginas de autenticação */
+body:has(.login-container) {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding-top: 0; /* Páginas de auth não precisam compensar navbar */
+}
+
+body:has(.cadastro-container) {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding-top: 0; /* Páginas de auth não precisam compensar navbar */
+}
+
+/* Container principal das páginas de auth */
+.auth-page-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Conteúdo principal centralizado */
+.auth-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 1rem;
+    min-height: auto;
+    padding-top: 1rem;
+}
+
+/* Container específico para login - mais compacto */
 .login-container {
-    margin-top: 3rem;
-    margin-bottom: 3rem;
-    max-width: 450px;
+    margin: 0;
+    max-width: 420px;
+    width: 100%;
+}
+
+/* Container específico para cadastro - permite crescer */
+.cadastro-container {
+    margin: 0;
+    max-width: 800px;
+    width: 100%;
 }
 
 .logo-container {
@@ -447,6 +512,24 @@ button:has(i.fa-eye):hover {
     font-size: 1.1rem;
 }
 
+/* Estados do botão de login durante carregamento */
+.login-btn:disabled,
+.login-btn.disabled {
+    background-color: var(--cor-primaria) !important;
+    border-color: var(--cor-primaria) !important;
+    color: var(--cor-secundaria) !important;
+    opacity: 0.8;
+    cursor: not-allowed;
+}
+
+.login-btn:disabled:hover,
+.login-btn.disabled:hover {
+    background-color: var(--cor-primaria) !important;
+    border-color: var(--cor-primaria) !important;
+    transform: none;
+    box-shadow: var(--sombra-suave);
+}
+
 .register-link {
     text-align: center;
     margin-top: 1.5rem;
@@ -467,12 +550,34 @@ button:has(i.fa-eye):hover {
 .login-footer,
 footer {
     margin-top: auto;
-    padding: 2rem 0;
     background-color: var(--cor-primaria);
     color: var(--cor-secundaria);
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     border-top: 3px solid var(--cor-primaria-hover);
+    flex-shrink: 0;
+}
+
+/* Footer das páginas internas (pedidos, cardápio, relatórios) */
+footer.mt-5 {
+    padding: .5rem 0;
+}
+
+/* Footer específico para páginas de autenticação */
+.auth-footer {
+    padding: 1rem 0;
+    background-color: var(--cor-primaria);
+    color: var(--cor-secundaria);
+    text-align: center;
+    font-size: 0.85rem;
+    border-top: 2px solid var(--cor-primaria-hover);
+    flex-shrink: 0;
+    margin-top: auto;
+}
+
+/* Remove padding do container dentro do auth-footer */
+.auth-footer .container {
+    padding: 0;
 }
 
 /* === ALERTAS E MENSAGENS === */
@@ -661,11 +766,23 @@ footer {
     transform: translateY(-2px);
 }
 
+.role-card.selected {
+    border-color: var(--cor-primaria);
+    background-color: rgba(111, 66, 193, 0.05);
+    box-shadow: var(--sombra-suave);
+}
+
 .role-card .form-check-input:checked ~ .form-check-label {
     color: var(--cor-primaria);
 }
 
 /* === RESPONSIVIDADE === */
+@media (max-width: 992px) {
+    .cadastro-container .card-body {
+        padding: 2rem 3rem;
+    }
+}
+
 @media (max-width: 768px) {
     .sidebar {
         position: static;
@@ -673,10 +790,12 @@ footer {
         border-right: none;
         border-bottom: 1px solid #dee2e6;
         padding: 1rem;
+        top: auto; /* Remove sticky em mobile */
     }
 
     .content {
         padding: 1rem;
+        padding-top: 2rem; /* Mais espaço do topo em mobile também */
     }
 
     .nav-link {
@@ -698,6 +817,69 @@ footer {
 
     .role-card {
         margin-bottom: 1rem;
+    }
+
+    /* Ajustes específicos para páginas de autenticação mobile */
+    body:has(.login-container), 
+    body:has(.cadastro-container) {
+        min-height: 100vh;
+        padding-top: 0; /* Manter sem padding em mobile para auth */
+    }
+
+    .auth-content {
+        padding: 1rem 1rem;
+        align-items: flex-start;
+        min-height: auto;
+        justify-content: flex-start;
+        padding-top: 1rem;
+    }
+
+    .login-container,
+    .cadastro-container {
+        max-width: 100%;
+        margin: 0;
+    }
+
+    .auth-footer {
+        font-size: 0.75rem;
+        padding: 1rem 0;
+    }
+
+    .auth-footer img {
+        height: 18px !important;
+        margin-right: 6px !important;
+    }
+
+    /* Logo menor em mobile */
+    .logo-container img {
+        height: 60px !important;
+    }
+    
+    .logo-text {
+        font-size: 2rem !important;
+    }
+
+    .cadastro-container .card-body {
+        padding: 1.5rem 2rem;
+    }
+    
+    .cadastro-container h1 {
+        font-size: 1.5rem;
+    }
+    
+    .cadastro-container .d-flex.gap-3 {
+        flex-direction: column;
+        gap: 0.75rem !important;
+    }
+
+    /* Ajustar padding do body em mobile também */
+    body {
+        padding-top: 80px; /* Navbar menor em mobile */
+    }
+
+    body:has(.login-container), 
+    body:has(.cadastro-container) {
+        padding-top: 0 !important; /* Auth pages sem padding */
     }
 }
 
@@ -748,4 +930,104 @@ button[class*="btn-outline-primary"][class*="btn-sm"]:not(.btn-purple):not(.btn-
 /* Títulos dos itens de pedido */
 .item-card h6 {
     color: #333 !important;
+}
+
+/* Ajustes específicos para página de cadastro */
+body:has(.cadastro-container) .auth-content {
+    align-items: center;
+    padding: 1rem 1rem;
+}
+
+/* Cards de role mais compactos no cadastro */
+.cadastro-container .role-card {
+    transition: all 0.3s ease;
+}
+
+.cadastro-container .role-card .card-body {
+    padding: 0.75rem;
+}
+
+/* Ajustes para layout mais compacto do cadastro */
+.cadastro-container .row {
+    margin-bottom: 0;
+}
+
+.cadastro-container .form-label {
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.cadastro-container .input-group {
+    margin-bottom: 0;
+}
+
+.cadastro-container .card-body {
+    padding: 2rem 5rem;
+}
+
+.cadastro-container h1 {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Otimização dos cards de role */
+.cadastro-container .role-card .form-check-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.cadastro-container .role-description small {
+    font-size: 0.75rem;
+}
+
+.cadastro-container .d-flex.gap-3 .role-card {
+    min-height: auto;
+}
+
+/* === BADGES CUSTOMIZADAS PARA RELATÓRIOS === */
+/* Usar exatamente as mesmas cores dos status da página de pedidos */
+.badge.bg-warning {
+    background-color: var(--cor-pendente) !important;
+    color: #000 !important;
+}
+
+.badge.bg-danger {
+    background-color: var(--cor-preparo) !important;
+    color: #fff !important;
+}
+
+.badge.bg-success {
+    background-color: var(--cor-pronto) !important;
+    color: #fff !important;
+}
+
+.badge.bg-primary {
+    background-color: var(--cor-primaria) !important;
+    color: #fff !important;
+}
+
+.badge.bg-secondary {
+    background-color: var(--cor-cancelado) !important;
+    color: #fff !important;
+}
+
+/* Progress bars com as mesmas cores */
+.progress-bar.bg-warning {
+    background-color: var(--cor-pendente) !important;
+}
+
+.progress-bar.bg-danger {
+    background-color: var(--cor-preparo) !important;
+}
+
+.progress-bar.bg-success {
+    background-color: var(--cor-pronto) !important;
+}
+
+.progress-bar.bg-primary {
+    background-color: var(--cor-primaria) !important;
+}
+
+.progress-bar.bg-secondary {
+    background-color: var(--cor-cancelado) !important;
 }

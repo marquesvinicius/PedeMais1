@@ -18,6 +18,44 @@ document.addEventListener('DOMContentLoaded', () => {
         tipoUsuarioInputs: tipoUsuarioInputs.length
     });
 
+    // Tornar todo o card clicável para selecionar tipo de usuário
+    const roleCards = document.querySelectorAll('.role-card');
+    roleCards.forEach(card => {
+        card.addEventListener('click', (e) => {
+            // Previne que o clique no próprio radio button seja duplicado
+            if (e.target.type === 'radio') return;
+            
+            // Encontra o radio button dentro do card
+            const radioButton = card.querySelector('input[type="radio"]');
+            if (radioButton) {
+                radioButton.checked = true;
+                
+                // Remove a classe 'selected' de todos os cards
+                roleCards.forEach(c => c.classList.remove('selected'));
+                
+                // Adiciona a classe 'selected' ao card clicado
+                card.classList.add('selected');
+            }
+        });
+        
+        // Adiciona estilo de cursor pointer
+        card.style.cursor = 'pointer';
+    });
+
+    // Adiciona event listener para mudanças nos radio buttons
+    tipoUsuarioInputs.forEach(input => {
+        input.addEventListener('change', () => {
+            // Remove a classe 'selected' de todos os cards
+            roleCards.forEach(card => card.classList.remove('selected'));
+            
+            // Adiciona a classe 'selected' ao card do radio button selecionado
+            const selectedCard = input.closest('.role-card');
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+            }
+        });
+    });
+
     // Função para mostrar notificações
     function mostrarNotificacao(mensagem, tipo = 'success') {
         // Cria o elemento toast

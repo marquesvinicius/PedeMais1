@@ -1,6 +1,11 @@
 import * as apiAuth from './api/apiAuth.js'
 import { BASE_URL } from './config.js'
 
+// Função para obter token válido (sessão primeiro, depois localStorage)
+function obterTokenValido() {
+    return sessionStorage.getItem('token') || localStorage.getItem('token')
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     // Verificar autenticação
     await apiAuth.verificarAutenticacao()
@@ -70,7 +75,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function buscarRelatorio(filtros) {
-        const token = localStorage.getItem('token')
+        const token = obterTokenValido()
         const params = new URLSearchParams()
         
         if (filtros.dataInicial) params.append('dataInicial', filtros.dataInicial)
@@ -85,6 +90,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 'Content-Type': 'application/json'
             }
         })
+
+        // Se receber 403/401, limpar tokens inválidos e redirecionar
+        if (response.status === 403 || response.status === 401) {
+            sessionStorage.removeItem('token')
+            localStorage.removeItem('token')
+            window.location.href = '../../index.html'
+            return null
+        }
 
         if (!response.ok) {
             if (response.status === 404) {
@@ -590,12 +603,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function getStatusColor(status) {
         switch (status.toLowerCase()) {
-            case 'pendente': return 'yellow'
-            case 'em preparo': return 'orange'
-            case 'pronto': return 'green'
-            case 'entregue': return 'purple'
-            case 'cancelado': return 'red'
-            default: return 'gray'
+            case 'pendente': return 'warning'
+            case 'em preparo': return 'danger'
+            case 'pronto': return 'success'
+            case 'entregue': return 'primary'
+            case 'cancelado': return 'secondary'
+            default: return 'secondary'
         }
     }
 
