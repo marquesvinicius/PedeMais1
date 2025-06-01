@@ -562,6 +562,9 @@ footer {
 footer.mt-0 {
     padding: .5rem 0;
 }
+footer.mt-5 {
+    padding: .5rem 0;
+}
 
 /* Footer específico para páginas de autenticação */
 .auth-footer {
