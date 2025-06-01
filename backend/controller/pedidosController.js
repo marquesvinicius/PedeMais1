@@ -223,7 +223,7 @@ const atualizarStatusPedido = async (req, res) => {
   }
 
   // Validar status permitidos
-  const statusPermitidos = ['pendente', 'em preparo', 'pronto', 'entregue']
+  const statusPermitidos = ['pendente', 'em preparo', 'pronto', 'entregue', 'cancelado']
   if (!statusPermitidos.includes(status.toLowerCase())) {
     console.error('❌ [atualizarStatusPedido] Status inválido:', status)
     return res.status(400).json({ 

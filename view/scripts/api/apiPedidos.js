@@ -47,6 +47,10 @@ export async function buscarPedidoPorId(id) {
 
 export async function atualizarStatusPedido(id, novoStatus) {
   const token = obterTokenValido()
+  
+  console.log('=== DEBUG: Tentando atualizar status ===')
+  console.log('ID:', id, 'Status:', novoStatus)
+  
   const response = await fetch(`${BASE_URL}/api/pedidos/${id}`, {
     method: 'PATCH',
     headers: {
@@ -56,6 +60,8 @@ export async function atualizarStatusPedido(id, novoStatus) {
     body: JSON.stringify({ status: novoStatus })
   })
   
+  console.log('Status da resposta:', response.status)
+  
   if (response.status === 403 || response.status === 401) {
     sessionStorage.removeItem('token')
     localStorage.removeItem('token')
@@ -64,7 +70,14 @@ export async function atualizarStatusPedido(id, novoStatus) {
   }
   
   if (!response.ok) {
-    throw new Error('Erro ao atualizar status do pedido')
+    const errorData = await response.json().catch(() => ({ erro: 'Erro desconhecido' }))
+    console.log('Erro detalhado do backend:', errorData)
+    
+    if (errorData.statusPermitidos) {
+      console.log('Status permitidos pelo backend:', errorData.statusPermitidos)
+    }
+    
+    throw new Error(errorData.erro || 'Erro ao atualizar status do pedido')
   }
   
   return await response.json()
