@@ -1,3 +1,5 @@
+import { BASE_URL } from './config.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM carregado, procurando elementos...');
 
@@ -127,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Dados do formulário coletados:', { ...formData, senha: '***' });
 
         // URL do servidor
-        const apiUrl = 'http://localhost:5000/api/usuarios/cadastro';
+        const apiUrl = `${BASE_URL}/api/usuarios/cadastro`;
         console.log('Tentando conexão com:', apiUrl);
 
         try {
