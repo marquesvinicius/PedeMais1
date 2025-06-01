@@ -15,6 +15,9 @@
     <!-- CSS Global -->
     <link rel="stylesheet" href="../../assets/css/styles.css">
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../../assets/img/logo-pedemais1.png">
+
     <style>
         .pedido-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -26,7 +29,7 @@
         
         /* Gradientes específicos por status */
         .pedido-header.status-pendente {
-            background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+            background: linear-gradient(135deg, #f39c12 0%, #6f4504 100%);
         }
         
         .pedido-header.status-preparo {
@@ -117,7 +120,7 @@
         
         .back-button {
             position: fixed;
-            top: 20px;
+            top: 140px;
             left: 20px;
             z-index: 1000;
             border-radius: 50px;
@@ -127,6 +130,43 @@
 </head>
 
 <body data-requer-auth="true">
+    <!-- Barra de navegação superior -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="../../index.html">
+                <img src="../../assets/img/logo-pedemais1.png" alt="PedeMais1 Logo">
+                PedeMais1
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link px-4" href="pedidos.html">
+                            <i class="fas fa-list-alt me-2"></i>Pedidos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-4" href="cardapio.html">
+                            <i class="fas fa-utensils me-2"></i>Cardápio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-4" href="relatorios.html">
+                            <i class="fas fa-chart-bar me-2"></i>Relatórios
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <button id="logout-btn" class="btn btn-outline-danger ms-3">
+                            <i class="fas fa-sign-out-alt me-2"></i>Sair
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
     <!-- Botão de voltar -->
     <a href="pedidos.html" class="btn btn-warning back-button">
         <i class="fas fa-arrow-left me-2"></i>Voltar aos Pedidos

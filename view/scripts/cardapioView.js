@@ -1,11 +1,11 @@
 // view/scripts/cardapioView.js
 import * as apiProdutos from './api/apiProdutos.js'
 import * as apiAuth from './api/apiAuth.js'
-
+import { waitForSupabase } from '../../supabase.js'
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Verificar autenticação
-    await apiAuth.verificarAutenticacao()
+    // Verificar autenticação - temporariamente desabilitado para debug
+    // await apiAuth.verificarAutenticacao()
 
     // Elementos do DOM
     const produtosContainer = document.getElementById('produtos-container')
@@ -39,15 +39,94 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (filtroPreco) filtroPreco.addEventListener('change', aplicarFiltros)
     }
 
+    // Função para adicionar produtos de teste
+    async function adicionarProdutosTeste() {
+        try {
+            const supabase = await waitForSupabase()
+            
+            if (!supabase) {
+                throw new Error('Supabase não disponível')
+            }
+
+            const testProducts = [
+                {
+                    nome: 'Hambúrguer Clássico',
+                    categoria: 'lanches',
+                    preco: 25.90,
+                    descricao: 'Hambúrguer artesanal com carne, queijo, alface e tomate'
+                },
+                {
+                    nome: 'Coca-Cola 350ml',
+                    categoria: 'bebidas',
+                    preco: 5.50,
+                    descricao: 'Refrigerante gelado'
+                },
+                {
+                    nome: 'Brigadeiro',
+                    categoria: 'sobremesas',
+                    preco: 3.50,
+                    descricao: 'Doce de chocolate tradicional'
+                },
+                {
+                    nome: 'Pizza Margherita',
+                    categoria: 'lanches',
+                    preco: 35.00,
+                    descricao: 'Pizza com molho de tomate, mussarela e manjericão'
+                },
+                {
+                    nome: 'Suco de Laranja',
+                    categoria: 'bebidas',
+                    preco: 8.00,
+                    descricao: 'Suco natural de laranja'
+                },
+                {
+                    nome: 'Pudim de Leite',
+                    categoria: 'sobremesas',
+                    preco: 7.50,
+                    descricao: 'Pudim cremoso de leite condensado'
+                }
+            ]
+
+            const { error } = await supabase
+                .from('produtos')
+                .insert(testProducts)
+
+            if (error) {
+                throw error
+            }
+
+            console.log('Produtos de teste adicionados com sucesso!')
+            return true
+        } catch (error) {
+            console.error('Erro ao adicionar produtos de teste:', error)
+            return false
+        }
+    }
+
     // Funções principais
     async function carregarProdutos() {
         try {
             mostrarLoading(true)
 
             const data = await apiProdutos.buscarCardapio()
-            console.log('Produtos carregados:', data) // 👈 Adicione isso
-            data.forEach(p => console.log(p));
-            produtos = data
+            console.log('Produtos carregados:', data)
+            
+            // Se não há produtos, adicionar produtos de teste
+            if (data.length === 0) {
+                console.log('Nenhum produto encontrado. Adicionando produtos de teste...')
+                const sucesso = await adicionarProdutosTeste()
+                
+                if (sucesso) {
+                    // Recarregar produtos após adicionar dados de teste
+                    const novosData = await apiProdutos.buscarCardapio()
+                    produtos = novosData
+                } else {
+                    produtos = data
+                }
+            } else {
+                produtos = data
+            }
+            
             renderizarProdutos(produtos)
         } catch (error) {
             console.error('Erro ao carregar produtos:', error)
@@ -61,7 +140,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!listaProdutos) return
 
         listaProdutos.innerHTML = ''
-        const categorias = [...new Set(produtosFiltrados.map(p => p.categoria || 'Outros'))]
+        const categorias = [...new Set(produtosFiltrados.map(p => p.categoria || 'outros'))]
 
         categorias.forEach(categoria => {
             const produtosCategoria = produtosFiltrados.filter(p => p.categoria === categoria)

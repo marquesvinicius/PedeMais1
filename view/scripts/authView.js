@@ -47,6 +47,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Funções
   async function checkAuthState() {
     try {
+      // Verificar se acabou de fazer logout (flag temporária)
+      const logoutRecente = sessionStorage.getItem('logoutRecente')
+      if (logoutRecente) {
+        // Remover flag e não fazer auto-login
+        sessionStorage.removeItem('logoutRecente')
+        return
+      }
+      
       const session = await apiAuth.verificarAutenticacao()
       
       // Verificar se está na página de login (index.html ou raiz do site)

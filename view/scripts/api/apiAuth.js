@@ -64,12 +64,16 @@ export function verificarAutenticacao() {
 }
 
 export function fazerLogout(esquecerLogin = false) {
-    // Remover token da sessão atual
-    sessionStorage.removeItem('token')
+    // Sempre limpar dados da sessão atual
+    sessionStorage.clear() // Limpa todos os dados da sessão
     
     if (esquecerLogin) {
         // Remover também dados de "lembrar login"
         limparDadosLembrarLogin()
+    } else {
+        // Mesmo sem esquecer login, limpar token atual para forçar novo login
+        localStorage.removeItem('token')
+        // Mas manter outros dados como ultimoEmail, lembrarLogin, etc.
     }
 }
 

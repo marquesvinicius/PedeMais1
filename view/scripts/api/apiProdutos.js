@@ -1,8 +1,15 @@
 // view/scripts/api/apiProdutos.js
-import { supabase } from '../../../supabase.js'
+import { supabase, waitForSupabase } from '../../../supabase.js'
 
 export async function buscarCardapio() {
-    const { data, error } = await supabase
+    // Aguardar o Supabase estar disponível
+    const client = supabase || await waitForSupabase()
+    
+    if (!client) {
+        throw new Error('Supabase não está disponível')
+    }
+    
+    const { data, error } = await client
         .from('produtos')
         .select('*')
         .order('categoria, nome')

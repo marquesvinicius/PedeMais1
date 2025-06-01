@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Supabase - PedeMais1</title>
+</head>
+<body>
+    <h1>Teste Supabase</h1>
+    <div id="status">Carregando...</div>
+    <div id="produtos"></div>
+    <button id="addTestProducts">Adicionar Produtos de Teste</button>
+
+    <!-- Supabase JavaScript Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module">
+        import { waitForSupabase } from './supabase.js'
+
+        const statusDiv = document.getElementById('status')
+        const produtosDiv = document.getElementById('produtos')
+        const addButton = document.getElementById('addTestProducts')
+
+        async function testSupabase() {
+            try {
+                statusDiv.innerHTML = 'Aguardando Supabase...'
+                const supabase = await waitForSupabase()
+                
+                if (!supabase) {
+                    statusDiv.innerHTML = 'Erro: Supabase não foi inicializado'
+                    return
+                }
+
+                statusDiv.innerHTML = 'Supabase carregado! Buscando produtos...'
+
+                // Buscar produtos existentes
+                const { data, error } = await supabase
+                    .from('produtos')
+                    .select('*')
+
+                if (error) {
+                    statusDiv.innerHTML = `Erro ao buscar produtos: ${error.message}`
+                    return
+                }
+
+                statusDiv.innerHTML = `Supabase funcionando! Encontrados ${data.length} produtos.`
+                produtosDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`
+
+                // Se não há produtos, mostrar botão para adicionar
+                if (data.length === 0) {
+                    addButton.style.display = 'block'
+                }
+
+            } catch (err) {
+                statusDiv.innerHTML = `Erro: ${err.message}`
+                console.error(err)
+            }
+        }
+
+        async function addTestProducts() {
+            try {
+                const supabase = await waitForSupabase()
+                
+                const testProducts = [
+                    {
+                        nome: 'Hambúrguer Clássico',
+                        categoria: 'lanches',
+                        preco: 25.90,
+                        descricao: 'Hambúrguer artesanal com carne, queijo, alface e tomate'
+                    },
+                    {
+                        nome: 'Coca-Cola 350ml',
+                        categoria: 'bebidas',
+                        preco: 5.50,
+                        descricao: 'Refrigerante gelado'
+                    },
+                    {
+                        nome: 'Brigadeiro',
+                        categoria: 'sobremesas',
+                        preco: 3.50,
+                        descricao: 'Doce de chocolate tradicional'
+                    },
+                    {
+                        nome: 'Pizza Margherita',
+                        categoria: 'lanches',
+                        preco: 35.00,
+                        descricao: 'Pizza com molho de tomate, mussarela e manjericão'
+                    },
+                    {
+                        nome: 'Suco de Laranja',
+                        categoria: 'bebidas',
+                        preco: 8.00,
+                        descricao: 'Suco natural de laranja'
+                    }
+                ]
+
+                const { data, error } = await supabase
+                    .from('produtos')
+                    .insert(testProducts)
+
+                if (error) {
+                    statusDiv.innerHTML = `Erro ao adicionar produtos: ${error.message}`
+                    return
+                }
+
+                statusDiv.innerHTML = 'Produtos de teste adicionados! Recarregando...'
+                setTimeout(() => {
+                    window.location.reload()
+                }, 1000)
+
+            } catch (err) {
+                statusDiv.innerHTML = `Erro ao adicionar produtos: ${err.message}`
+                console.error(err)
+            }
+        }
+
+        addButton.addEventListener('click', addTestProducts)
+        addButton.style.display = 'none'
+
+        testSupabase()
+    </script>
+</body>
+</html> 

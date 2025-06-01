@@ -14,6 +14,9 @@
 
     <!-- CSS Global -->
     <link rel="stylesheet" href="../../assets/css/styles.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../../assets/img/logo-pedemais1.png">
 </head>
 
 <body data-requer-auth="true">
@@ -21,23 +24,34 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
-            <a class="navbar-brand" href="../../index.html">PedeMais1</a>
+            <a class="navbar-brand" href="../../index.html">
+                <img src="../../assets/img/logo-pedemais1.png" alt="PedeMais1 Logo">
+                PedeMais1
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav align-items-center">
                     <li class="nav-item">
-                        <a class="nav-link px-4" href="pedidos.html">Pedidos</a>
+                        <a class="nav-link px-4" href="pedidos.html">
+                            <i class="fas fa-list-alt me-2"></i>Pedidos
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link px-4" href="cardapio.html">Cardápio</a>
+                        <a class="nav-link px-4" href="cardapio.html">
+                            <i class="fas fa-utensils me-2"></i>Cardápio
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active px-4" href="relatorios.html">Relatórios</a>
+                        <a class="nav-link active px-4" href="relatorios.html">
+                            <i class="fas fa-chart-bar me-2"></i>Relatórios
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <button id="logout-btn" class="btn btn-outline-danger ms-3">Sair</button>
+                        <button id="logout-btn" class="btn btn-outline-danger ms-3">
+                            <i class="fas fa-sign-out-alt me-2"></i>Sair
+                        </button>
                     </li>
                 </ul>
             </div>
@@ -136,6 +150,16 @@
             </div>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="mt-5">
+        <div class="container">
+            <div class="d-flex justify-content-center align-items-center">
+                <img src="../../assets/img/logo-pedemais1.png" alt="PedeMais1" style="height: 24px; margin-right: 10px;">
+                <p class="mb-0">© 2025 PedeMais1 - Sistema de Gerenciamento de Pedidos. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
 
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

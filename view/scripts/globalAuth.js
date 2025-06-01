@@ -25,6 +25,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 await apiAuth.fazerLogout(esquecerLogin)
                 
+                // Marcar que foi feito logout recente para evitar auto-login
+                sessionStorage.setItem('logoutRecente', 'true')
+                
+                // Forçar limpeza adicional de qualquer token remanescente
+                localStorage.removeItem('token')
+                sessionStorage.removeItem('token')
+                
                 // Mostrar mensagem de feedback
                 if (temLoginLembrado) {
                     const mensagem = esquecerLogin 

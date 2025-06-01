@@ -48,9 +48,9 @@ describe('Testes de Cardápio', () => {
     describe('GET /cardapio - Busca do Cardápio', () => {
         test('Deve listar todos os produtos do cardápio ordenados', async () => {
             const mockProdutos = [
-                { id: 1, nome: 'Hambúrguer', categoria: 'Lanches', preco: 25.00 },
-                { id: 2, nome: 'Pizza', categoria: 'Lanches', preco: 30.00 },
-                { id: 3, nome: 'Refrigerante', categoria: 'Bebidas', preco: 5.00 },
+                { id: 1, nome: 'Hambúrguer', categoria: 'lanches', preco: 25.00 },
+                { id: 2, nome: 'Pizza', categoria: 'lanches', preco: 30.00 },
+                { id: 3, nome: 'Refrigerante', categoria: 'bebidas', preco: 5.00 },
             ];
             supabase.order.mockResolvedValueOnce({ data: mockProdutos, error: null });
 
@@ -76,7 +76,7 @@ describe('Testes de Cardápio', () => {
 
     // Testes para Adição de Produtos
     describe('POST /cardapio - Adição de Produtos', () => {
-        const novoProdutoBase = { nome: 'Suco Natural', categoria: 'Bebidas', preco: 8.00, descricao: 'Laranja' };
+        const novoProdutoBase = { nome: 'Suco Natural', categoria: 'bebidas', preco: 8.00, descricao: 'Laranja' };
         // mockAdminToken é definido globalmente
 
         test.skip('Deve adicionar um novo produto com sucesso (admin)', async () => {
@@ -98,9 +98,9 @@ describe('Testes de Cardápio', () => {
 
         test('Não deve adicionar produto sem campos obrigatórios (admin)', async () => {
             const camposInvalidosParaTestar = [
-                { payload: { categoria: 'Bebidas', preco: 8.00 }, missing: 'nome' },
+                { payload: { categoria: 'bebidas', preco: 8.00 }, missing: 'nome' },
                 { payload: { nome: 'Suco', preco: 8.00 }, missing: 'categoria' },
-                { payload: { nome: 'Suco', categoria: 'Bebidas'}, missing: 'preco' }
+                { payload: { nome: 'Suco', categoria: 'bebidas'}, missing: 'preco' }
             ];
 
             for (const caso of camposInvalidosParaTestar) {

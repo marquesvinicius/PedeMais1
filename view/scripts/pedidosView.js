@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Atualizar as informações do pedido
       const titulo = clone.querySelector('.pedido-titulo')
-      if (titulo) titulo.textContent = `Pedido #${pedido.id.toString().padStart(3, '0')} - Mesa ${pedido.mesa}`
+      if (titulo) titulo.innerHTML = `Pedido <span class="numero-pedido">#${pedido.id.toString().padStart(3, '0')}</span> - Mesa ${pedido.mesa}`
 
       const itens = clone.querySelector('.pedido-itens')
       if (itens) itens.textContent = pedido.itens

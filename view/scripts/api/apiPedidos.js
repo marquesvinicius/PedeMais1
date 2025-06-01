@@ -1,19 +1,41 @@
 import { BASE_URL } from '../config.js'
 
+// Função para obter token válido (sessão primeiro, depois localStorage)
+function obterTokenValido() {
+  return sessionStorage.getItem('token') || localStorage.getItem('token')
+}
+
 export async function buscarPedidos() {
-  const token = localStorage.getItem('token')
+  const token = obterTokenValido()
   const response = await fetch(`${BASE_URL}/api/pedidos`, {
     headers: { Authorization: `Bearer ${token}` }
   })
+  
+  // Se receber 403/401, limpar tokens inválidos
+  if (response.status === 403 || response.status === 401) {
+    sessionStorage.removeItem('token')
+    localStorage.removeItem('token')
+    // Redirecionar para login
+    window.location.href = '../../index.html'
+    return []
+  }
+  
   const data = await response.json()
   return data.pedidos || []
 }
 
 export async function buscarPedidoPorId(id) {
-  const token = localStorage.getItem('token')
+  const token = obterTokenValido()
   const response = await fetch(`${BASE_URL}/api/pedidos/${id}`, {
     headers: { Authorization: `Bearer ${token}` }
   })
+  
+  if (response.status === 403 || response.status === 401) {
+    sessionStorage.removeItem('token')
+    localStorage.removeItem('token')
+    window.location.href = '../../index.html'
+    return null
+  }
   
   if (!response.ok) {
     throw new Error('Pedido não encontrado')
@@ -24,7 +46,7 @@ export async function buscarPedidoPorId(id) {
 }
 
 export async function atualizarStatusPedido(id, novoStatus) {
-  const token = localStorage.getItem('token')
+  const token = obterTokenValido()
   const response = await fetch(`${BASE_URL}/api/pedidos/${id}`, {
     method: 'PATCH',
     headers: {
@@ -34,6 +56,13 @@ export async function atualizarStatusPedido(id, novoStatus) {
     body: JSON.stringify({ status: novoStatus })
   })
   
+  if (response.status === 403 || response.status === 401) {
+    sessionStorage.removeItem('token')
+    localStorage.removeItem('token')
+    window.location.href = '../../index.html'
+    return null
+  }
+  
   if (!response.ok) {
     throw new Error('Erro ao atualizar status do pedido')
   }
@@ -42,11 +71,18 @@ export async function atualizarStatusPedido(id, novoStatus) {
 }
 
 export async function excluirPedido(id) {
-  const token = localStorage.getItem('token')
+  const token = obterTokenValido()
   const response = await fetch(`${BASE_URL}/api/pedidos/${id}`, {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` }
   })
+  
+  if (response.status === 403 || response.status === 401) {
+    sessionStorage.removeItem('token')
+    localStorage.removeItem('token')
+    window.location.href = '../../index.html'
+    return null
+  }
   
   if (!response.ok) {
     throw new Error('Erro ao excluir pedido')
@@ -66,7 +102,7 @@ export async function filtrarPedidosPorMesa(pedidos, mesa) {
 export async function criarPedido(pedido) {
   console.log('🚀 [criarPedido] Iniciando criação de pedido:', pedido)
   
-  const token = localStorage.getItem('token')
+  const token = obterTokenValido()
   console.log('🔑 [criarPedido] Token encontrado:', token ? 'SIM' : 'NÃO')
   console.log('🔍 [criarPedido] Token (primeiros 50 chars):', token ? token.substring(0, 50) + '...' : 'null')
   console.log('🌍 [criarPedido] URL da API:', `${BASE_URL}/api/pedidos`)
@@ -83,6 +119,13 @@ export async function criarPedido(pedido) {
   console.log('📡 [criarPedido] Status da resposta:', response.status)
   console.log('📡 [criarPedido] Headers da resposta:', Object.fromEntries(response.headers.entries()))
 
+  if (response.status === 403 || response.status === 401) {
+    sessionStorage.removeItem('token')
+    localStorage.removeItem('token')
+    window.location.href = '../../index.html'
+    return null
+  }
+
   const data = await response.json()
   console.log('📄 [criarPedido] Dados da resposta:', data)
 
@@ -91,10 +134,17 @@ export async function criarPedido(pedido) {
 }
 
 export async function buscarItensPedido(pedidoId) {
-  const token = localStorage.getItem('token')
+  const token = obterTokenValido()
   const response = await fetch(`${BASE_URL}/api/pedidos/${pedidoId}/itens`, {
     headers: { Authorization: `Bearer ${token}` }
   })
+  
+  if (response.status === 403 || response.status === 401) {
+    sessionStorage.removeItem('token')
+    localStorage.removeItem('token')
+    window.location.href = '../../index.html'
+    return []
+  }
   
   if (!response.ok) {
     return []

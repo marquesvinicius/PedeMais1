@@ -42,7 +42,7 @@ describe('Testes de Validação de Tipos de Dados', () => {
             nome: 'Produto Teste Validação',
             descricao: 'Descrição Teste',
             preco: 10.99,
-            categoria: 'Teste',
+            categoria: 'teste',
             disponivel: true,
             imagem_url: 'http://example.com/imagem.png'
         };

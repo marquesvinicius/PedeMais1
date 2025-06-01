@@ -55,7 +55,7 @@ async function carregarCardapio() {
                     nome: 'Arroz',
                     descricao: 'Arroz branco tradicional',
                     preco: 5.00,
-                    categoria: 'Acompanhamentos',
+                    categoria: 'acompanhamentos',
                     disponibilidade: true
                 }
             ]
@@ -75,7 +75,7 @@ async function carregarCardapio() {
                 nome: 'Arroz',
                 descricao: 'Arroz branco tradicional',
                 preco: 5.00,
-                categoria: 'Acompanhamentos',
+                categoria: 'acompanhamentos',
                 disponibilidade: true
             }
         ]
@@ -103,7 +103,7 @@ function renderizarCardapio(produtos) {
     // Agrupar produtos por categoria
     const categorias = {}
     produtos.forEach(produto => {
-        const categoria = produto.categoria || 'Outros'
+        const categoria = produto.categoria || 'outros'
         if (!categorias[categoria]) {
             categorias[categoria] = []
         }

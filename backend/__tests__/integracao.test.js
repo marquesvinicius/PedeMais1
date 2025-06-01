@@ -130,7 +130,7 @@ describe('Testes de Integração', () => {
 
     // Testes para Fluxo de Admin (ex: rota de cardápio POST)
     describe('Fluxo de Admin - Gerenciamento de Cardápio', () => {
-        const novoProduto = { nome: 'Super Burger', categoria: 'Lanches', preco: 35.90, descricao: 'Delicioso' };
+        const novoProduto = { nome: 'Super Burger', categoria: 'lanches', preco: 35.90, descricao: 'Delicioso' };
 
         test('Admin deve conseguir adicionar um novo produto ao cardápio', async () => {
             supabase.select.mockResolvedValueOnce({ data: [{id: 'prod123', ...novoProduto}], error: null });
