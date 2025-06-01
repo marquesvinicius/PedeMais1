@@ -359,6 +359,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function renderizarRelatorio(dados, tipo) {
+        // Controla o layout baseado na presença de conteúdo
+        const conteudoContainer = document.getElementById('conteudo-relatorio')
+        
+        // Marca que há conteúdo, removendo a centralização
+        conteudoContainer.classList.add('has-content')
+        
+        cardsResumo.style.display = 'block'
+        
         switch (tipo) {
             case 'geral':
                 renderizarRelatorioGeral(dados)
@@ -625,13 +633,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         dataInicial.value = ''
         dataFinal.value = ''
         tipoRelatorio.value = 'geral'
+        
+        // Esconder cards de resumo e mostrar estado vazio
         cardsResumo.style.display = 'none'
+        
+        // Voltar ao estado vazio centralizado
+        const conteudoContainer = document.getElementById('conteudo-relatorio')
+        conteudoContainer.classList.remove('has-content')
+        
         conteudoRelatorio.innerHTML = `
-            <div class="alert alert-info text-center">
-                <i class="fas fa-info-circle me-2"></i>
-                Selecione os filtros e clique em "Gerar Relatório" para visualizar os dados.
+            <div class="alert alert-info text-center empty-state">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Nenhum relatório gerado</h3>
+                <p>Selecione os filtros e clique em "Gerar Relatório" para visualizar os dados.</p>
             </div>
         `
+        
+        definirDatasPadrao()
     }
 
     function mostrarLoading(mostrar) {
