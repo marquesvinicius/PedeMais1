@@ -48,9 +48,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (error) {
       console.error('Erro ao carregar pedidos:', error)
       if (pedidosContainer) {
+        // Remove a classe has-content para centralizar a mensagem de erro
+        pedidosContainer.classList.remove('has-content')
         pedidosContainer.innerHTML = `
-          <div class="alert alert-danger" role="alert">
-            Erro ao carregar pedidos. Por favor, tente novamente mais tarde.
+          <div class="alert alert-danger text-center empty-state">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Erro ao carregar pedidos</h3>
+            <p>Não foi possível carregar os pedidos. Verifique sua conexão e tente novamente.</p>
+            <button class="btn btn-primary" onclick="window.location.reload()">
+              <i class="fas fa-sync-alt me-2"></i>Tentar Novamente
+            </button>
           </div>
         `
       }
@@ -101,13 +108,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     pedidosContainer.innerHTML = ''
 
     if (pedidos.length === 0) {
+      // Remove a classe has-content para centralizar a mensagem vazia
+      pedidosContainer.classList.remove('has-content')
       pedidosContainer.innerHTML = `
-        <div class="alert alert-info" role="alert">
-          Nenhum pedido encontrado com os filtros selecionados.
+        <div class="alert alert-info text-center empty-state pedidos-vazio">
+          <i class="fas fa-clipboard-list"></i>
+          <h3>Nenhum pedido encontrado</h3>
+          <p>Não há pedidos que correspondam aos filtros selecionados.</p>
+          <button class="btn btn-success" onclick="window.location.href='novo-pedido.html'">
+            <i class="fas fa-plus me-2"></i>Criar Novo Pedido
+          </button>
         </div>
       `
       return
     }
+
+    // Adiciona a classe has-content quando há pedidos
+    pedidosContainer.classList.add('has-content')
 
     const template = document.getElementById('pedido-template')
     if (!template) return
