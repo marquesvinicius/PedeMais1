@@ -559,7 +559,7 @@ footer {
 }
 
 /* Footer das páginas internas (pedidos, cardápio, relatórios) */
-footer.mt-5 {
+footer.mt-0 {
     padding: .5rem 0;
 }
 
