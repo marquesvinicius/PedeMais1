@@ -7,6 +7,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Verificar autenticação - temporariamente desabilitado para debug
     // await apiAuth.verificarAutenticacao()
 
+    // Controle de permissões para botões de admin
+    const usuario = apiAuth.getUsuarioAtual()
+    const btnNovoItemFloating = document.getElementById('btn-novo-item-floating')
+    
+    // Mostrar botão flutuante apenas se for admin
+    if (usuario?.papel === 'admin' && btnNovoItemFloating) {
+        btnNovoItemFloating.classList.remove('d-none')
+    }
+
     // Elementos do DOM
     const produtosContainer = document.getElementById('produtos-container')
     const listaProdutos = document.getElementById('lista-produtos')
@@ -260,6 +269,107 @@ document.addEventListener('DOMContentLoaded', async () => {
     function formatarTituloCategoria(categoria) {
         return categoria.charAt(0).toUpperCase() + categoria.slice(1)
     }
+
+    // Função para controlar visibilidade do botão flutuante baseado no footer
+    function controlarBotaoFlutuante() {
+        const botaoFlutuante = document.getElementById('btn-novo-item-floating')
+        if (!botaoFlutuante) return
+
+        const footer = document.querySelector('footer')
+        if (!footer) return
+
+        const footerRect = footer.getBoundingClientRect()
+        const windowHeight = window.innerHeight
+        
+        // Ocultar o botão quando o footer estiver visível na tela
+        // Adiciona uma margem de 120px para começar a ocultar antes do footer aparecer completamente
+        // Isso considera a altura do próprio botão (56px) + margem de segurança
+        if (footerRect.top <= windowHeight + 120) {
+            botaoFlutuante.classList.add('btn-floating-hidden')
+        } else {
+            botaoFlutuante.classList.remove('btn-floating-hidden')
+        }
+    }
+
+    // Função para configurar a expansão do botão flutuante
+    function configurarBotaoFlutuante() {
+        const botaoFlutuante = document.getElementById('btn-novo-item-floating')
+        const botaoDesktop = document.getElementById('btn-abrir-modal-produto')
+        if (!botaoFlutuante || !botaoDesktop) return
+
+        // Estado de expansão
+        let isExpanded = false
+
+        // Expandir no clique (toggle)
+        botaoFlutuante.addEventListener('click', (e) => {
+            // Se já está expandido, executar a mesma ação do botão desktop
+            if (isExpanded) {
+                // Simular clique no botão desktop para abrir o modal
+                botaoDesktop.click()
+                return
+            }
+            
+            // Se não está expandido, expandir primeiro
+            e.preventDefault()
+            isExpanded = true
+            botaoFlutuante.classList.add('expanded')
+            
+            // Auto-colapsar após 3 segundos se não houver interação
+            setTimeout(() => {
+                if (isExpanded && !botaoFlutuante.matches(':hover')) {
+                    isExpanded = false
+                    botaoFlutuante.classList.remove('expanded')
+                }
+            }, 3000)
+        })
+
+        // Reset no mouse leave (apenas se não foi clicado)
+        botaoFlutuante.addEventListener('mouseleave', () => {
+            if (isExpanded) {
+                // Delay para permitir clique após hover
+                setTimeout(() => {
+                    if (!botaoFlutuante.matches(':hover')) {
+                        isExpanded = false
+                        botaoFlutuante.classList.remove('expanded')
+                    }
+                }, 500)
+            }
+        })
+
+        // Evitar colapso durante hover
+        botaoFlutuante.addEventListener('mouseenter', () => {
+            if (!isExpanded) {
+                botaoFlutuante.classList.add('expanded')
+            }
+        })
+    }
+
+    // Configurar controles mobile do botão flutuante
+    if (window.innerWidth < 768) {
+        window.addEventListener('scroll', controlarBotaoFlutuante)
+        // Verificar posição inicial
+        controlarBotaoFlutuante()
+        
+        // Configurar expansão do botão flutuante
+        configurarBotaoFlutuante()
+    }
+
+    // Também verificar quando a janela é redimensionada
+    window.addEventListener('resize', () => {
+        if (window.innerWidth < 768) {
+            if (!window.scrollListenerAdded) {
+                window.addEventListener('scroll', controlarBotaoFlutuante)
+                window.scrollListenerAdded = true
+            }
+            controlarBotaoFlutuante()
+            configurarBotaoFlutuante()
+        } else {
+            if (window.scrollListenerAdded) {
+                window.removeEventListener('scroll', controlarBotaoFlutuante)
+                window.scrollListenerAdded = false
+            }
+        }
+    })
 
     // TODO: Implementar quando os níveis de acesso estiverem prontos
     // Event listeners para os botões de editar e remover no modal de detalhes

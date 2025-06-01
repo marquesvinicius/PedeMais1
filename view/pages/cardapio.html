@@ -83,8 +83,8 @@
             <div class="col-md-9 col-lg-10 content">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2>Cardápio</h2>
-                    <!-- Botão visível apenas para admin -->
-                    <button id="btn-abrir-modal-produto" class="btn btn-primary d-none">
+                    <!-- Botão visível apenas para admin em desktop -->
+                    <button id="btn-abrir-modal-produto" class="btn btn-primary d-none d-md-block">
                         <i class="fas fa-plus me-2"></i>Novo Item
                     </button>
                 </div>
@@ -207,6 +207,12 @@
             </div>
         </div>
     </div>
+
+    <!-- Botão flutuante para mobile (apenas admin) -->
+    <button id="btn-novo-item-floating" class="btn-floating d-md-none d-none">
+        <i class="fas fa-plus"></i>
+        <span class="btn-floating-text">Novo Item</span>
+    </button>
 
     <!-- Footer -->
     <footer class="mt-0">

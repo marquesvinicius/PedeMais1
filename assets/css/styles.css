@@ -75,7 +75,7 @@ body {
 }
 
 .navbar-brand img {
-    height: 80px;
+    height: 60px;
     width: auto;
 }
 
@@ -404,7 +404,7 @@ button:has(i.fa-eye):hover {
     height: calc(100vh - 100px);
     position: sticky;
     top: 100px;
-    padding: 2rem 1.5rem;
+    padding: 3rem 1.5rem 2rem 1.5rem;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
 }
 
@@ -792,13 +792,14 @@ footer.mt-5 {
         height: auto;
         border-right: none;
         border-bottom: 1px solid #dee2e6;
-        padding: 1rem;
-        top: auto; /* Remove sticky em mobile */
+        padding: 2rem 1rem 1rem 1rem;
+        top: auto;
     }
 
     .content {
         padding: 1rem;
-        padding-top: 2rem; /* Mais espaço do topo em mobile também */
+        padding-top: 2rem;
+        padding-bottom: 100px;
     }
 
     .nav-link {
@@ -822,11 +823,10 @@ footer.mt-5 {
         margin-bottom: 1rem;
     }
 
-    /* Ajustes específicos para páginas de autenticação mobile */
     body:has(.login-container), 
     body:has(.cadastro-container) {
         min-height: 100vh;
-        padding-top: 0; /* Manter sem padding em mobile para auth */
+        padding-top: 0;
     }
 
     .auth-content {
@@ -853,7 +853,6 @@ footer.mt-5 {
         margin-right: 6px !important;
     }
 
-    /* Logo menor em mobile */
     .logo-container img {
         height: 60px !important;
     }
@@ -875,14 +874,18 @@ footer.mt-5 {
         gap: 0.75rem !important;
     }
 
-    /* Ajustar padding do body em mobile também */
     body {
-        padding-top: 80px; /* Navbar menor em mobile */
+        padding-top: 80px;
     }
 
     body:has(.login-container), 
     body:has(.cadastro-container) {
-        padding-top: 0 !important; /* Auth pages sem padding */
+        padding-top: 0 !important;
+    }
+
+    .btn-floating {
+        bottom: 30px;
+        right: 20px;
     }
 }
 
@@ -1032,5 +1035,121 @@ body:has(.cadastro-container) .auth-content {
 }
 
 .progress-bar.bg-secondary {
-    background-color: var(--cor-cancelado) !important;
+    background-color: var(--cor-texto-light) !important;
+}
+
+/* === BOTÃO FLUTUANTE === */
+.btn-floating {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    background-color: var(--cor-primaria);
+    color: var(--cor-secundaria);
+    border-radius: 28px; /* Alterado de 50% para valor fixo para permitir expansão */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    box-shadow: 0 4px 16px rgba(111, 66, 193, 0.3);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    font-size: 24px;
+    border: none;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.btn-floating i {
+    transition: all 0.3s ease;
+    min-width: 24px; /* Garante que o ícone mantenha espaço fixo */
+}
+
+.btn-floating-text {
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+    margin-left: 0;
+    font-size: 16px;
+    font-weight: 500;
+    max-width: 0;
+    overflow: hidden;
+}
+
+/* Estado expandido */
+.btn-floating:hover,
+.btn-floating:focus,
+.btn-floating.expanded {
+    width: auto;
+    padding: 0 20px 0 16px;
+    min-width: 56px;
+    border-radius: 28px;
+}
+
+.btn-floating:hover .btn-floating-text,
+.btn-floating:focus .btn-floating-text,
+.btn-floating.expanded .btn-floating-text {
+    opacity: 1;
+    transform: translateX(0);
+    margin-left: 12px;
+    max-width: 200px; /* Valor suficiente para o texto "Novo Pedido" */
+}
+
+.btn-floating:hover,
+.btn-floating:focus {
+    background-color: var(--cor-primaria-hover);
+    color: var(--cor-secundaria);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(111, 66, 193, 0.4);
+    text-decoration: none;
+}
+
+.btn-floating:active {
+    transform: translateY(0);
+}
+
+/* Estado oculto do botão flutuante */
+.btn-floating-hidden {
+    opacity: 0;
+    transform: translateY(20px) scale(0.8);
+    pointer-events: none;
+}
+
+/* Animação de pulsação para chamar atenção */
+.btn-floating {
+    animation: pulseFloat 2s infinite;
+}
+
+/* Remover animação quando oculto ou expandido */
+.btn-floating-hidden,
+.btn-floating:hover,
+.btn-floating:focus,
+.btn-floating.expanded {
+    animation: none;
+}
+
+@keyframes pulseFloat {
+    0% {
+        box-shadow: 0 4px 16px rgba(111, 66, 193, 0.3);
+    }
+    50% {
+        box-shadow: 0 4px 20px rgba(111, 66, 193, 0.5);
+    }
+    100% {
+        box-shadow: 0 4px 16px rgba(111, 66, 193, 0.3);
+    }
+}
+
+/* Ajustes para garantir que o botão não interfira com o footer */
+@media (max-width: 768px) {
+    .btn-floating {
+        bottom: 30px;
+        right: 20px;
+    }
+    
+    /* Adicionar padding inferior ao content em mobile para não sobrepor o botão */
+    .content {
+        padding-bottom: 100px;
+    }
 }

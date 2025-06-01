@@ -22,7 +22,7 @@
         .pedido-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 2rem 0;
+            padding: 1.5rem 0 2rem 0;
             margin-bottom: 2rem;
             transition: background 0.5s ease;
         }
@@ -55,6 +55,7 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            display: inline-block;
         }
         
         .item-card {
@@ -118,13 +119,112 @@
             background: #28a745;
         }
         
-        .back-button {
-            position: fixed;
-            top: 140px;
-            left: 20px;
-            z-index: 1000;
-            border-radius: 50px;
-            padding: 0.75rem 1.5rem;
+        /* Estilos para desktop */
+        @media (min-width: 769px) {
+            .pedido-header .d-flex {
+                gap: 3rem; /* Maior espaçamento entre data e status em desktop */
+            }
+            
+            .pedido-header .mb-3 {
+                margin-left: -30px; /* Alinha o botão mais à esquerda, próximo à logo */
+                margin-bottom: 2rem !important;
+            }
+            
+            .btn-outline-light {
+                padding: 0.9rem 1.2rem;
+                font-size: 1.1rem;
+                border-radius: 25px; /* Botão mais arredondado em desktop */
+            }
+        }
+        
+        /* Responsividade para mobile */
+        @media (max-width: 768px) {
+            .pedido-header {
+                padding: 1.5rem 0 2rem 0;
+            }
+            
+            .pedido-header .mb-3 {
+                margin-bottom: 1.5rem !important;
+            }
+            
+            .pedido-header h1 {
+                font-size: 1.5rem;
+                line-height: 1.3;
+                margin-bottom: 1rem !important;
+            }
+            
+            .pedido-header h1 i {
+                font-size: 1.3rem;
+                margin-right: 0.5rem !important;
+            }
+            
+            .pedido-header .d-flex {
+                margin-top: 0.5rem;
+                gap: 0.5rem; /* Espaço mínimo entre data e status */
+                align-items: center; /* Centraliza verticalmente */
+            }
+            
+            .pedido-header #pedido-data {
+                font-size: 0.9rem;
+                flex: 1; /* Permite que a data use o espaço disponível */
+                min-width: 0; /* Permite quebra de linha se necessário */
+                padding-right: 0.5rem; /* Garante espaço antes do badge */
+            }
+            
+            .status-badge-large {
+                font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
+                letter-spacing: 0.2px;
+                white-space: nowrap; /* Evita quebra do texto do status */
+                flex-shrink: 0; /* Não permite que o badge encolha */
+                margin-right: 0.3rem; /* Margem direita pequena para não criar espaço vazio */
+            }
+            
+            .total-section,
+            .action-section {
+                margin-top: 1rem;
+                padding: 1rem;
+            }
+            
+            .btn-outline-light {
+                font-size: 1rem;
+                padding: 0.8rem 1rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .pedido-header {
+                padding: 1.5rem 0 1.8rem 0;
+            }
+            
+            .pedido-header .mb-3 {
+                margin-bottom: 1.2rem !important;
+            }
+            
+            .pedido-header h1 {
+                font-size: 1.25rem;
+                margin-bottom: 0.8rem !important;
+            }
+            
+            .pedido-header #pedido-data {
+                font-size: 0.85rem;
+                padding-right: 0.3rem;
+            }
+            
+            .pedido-header #pedido-data i {
+                font-size: 0.8rem; /* Ícone menor em mobile pequeno */
+            }
+            
+            .status-badge-large {
+                font-size: 0.7rem;
+                padding: 0.3rem 0.6rem;
+                letter-spacing: 0.1px;
+            }
+            
+            .btn-outline-light {
+                padding: 0.8rem 1rem;
+                font-size: 0.95rem;
+            }
         }
     </style>
 </head>
@@ -167,25 +267,30 @@
         </div>
     </nav>
 
-    <!-- Botão de voltar -->
-    <a href="pedidos.html" class="btn btn-warning back-button">
-        <i class="fas fa-arrow-left me-2"></i>Voltar aos Pedidos
-    </a>
-
     <!-- Header do pedido -->
     <div class="pedido-header">
         <div class="container">
+            <!-- Botão de voltar integrado -->
+            <div class="mb-3">
+                <a href="pedidos.html" class="btn btn-outline-light">
+                    <i class="fas fa-arrow-left me-2"></i>Voltar aos Pedidos
+                </a>
+            </div>
+            
             <div class="row align-items-center">
-                <div class="col-md-8">
+                <div class="col-12 col-md-8 mb-3 mb-md-0">
                     <h1 class="mb-2" id="pedido-titulo">
                         <i class="fas fa-receipt me-3"></i>Carregando...
                     </h1>
-                    <p class="mb-0 opacity-75" id="pedido-data">
-                        <i class="fas fa-calendar me-2"></i>Data do pedido
-                    </p>
+                    <div class="d-flex flex-row align-items-start align-items-sm-center justify-content-space-between">
+                        <p class="mb-0 opacity-75 flex-shrink-1" id="pedido-data">
+                            <i class="fas fa-calendar me-2"></i>Data do pedido
+                        </p>
+                        <span class="status-badge-large flex-shrink-0 ms-2" id="pedido-status">Status</span>
+                    </div>
                 </div>
-                <div class="col-md-4 text-md-end">
-                    <span class="status-badge-large" id="pedido-status">Status</span>
+                <div class="col-12 col-md-4 text-center text-md-end d-md-none">
+                    <!-- Status badge moved to inline with date on mobile -->
                 </div>
             </div>
         </div>

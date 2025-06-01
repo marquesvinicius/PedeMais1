@@ -116,7 +116,7 @@ function renderizarCardapio(produtos) {
         categoriaDiv.className = 'categoria-container mb-4'
         
         categoriaDiv.innerHTML = `
-            <h4 class="categoria-titulo">${categoria}</h4>
+            <h4 class="categoria-titulo">${formatarTituloCategoria(categoria)}</h4>
             <div class="row" id="categoria-${categoria.toLowerCase()}">
             </div>
         `
@@ -134,6 +134,11 @@ function renderizarCardapio(produtos) {
     
     // Configurar event listeners para os botões de adicionar
     configurarEventListeners()
+}
+
+// Função para formatar título da categoria (primeira letra maiúscula)
+function formatarTituloCategoria(categoria) {
+    return categoria.charAt(0).toUpperCase() + categoria.slice(1)
 }
 
 // Criar card de produto

@@ -1,5 +1,5 @@
 // view/scripts/adminAdicionarProdutoView.js
-import { getUsuarioAtual } from './api/apiAuth.js'
+import { getUsuarioAtual, fetchAutenticado } from './api/apiAuth.js'
 import { BASE_URL } from './config.js'
 
 
@@ -11,10 +11,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     const modal = new bootstrap.Modal(modalElement)
     const alerta = document.getElementById('mensagem-erro-produto')
 
-    // Mostrar botão apenas se for admin
-    if (usuario?.papel === 'admin' && btnAdicionar) {
-        btnAdicionar.classList.remove('d-none')
+    // Função para controlar visibilidade do botão baseado no tamanho da tela
+    function controlarVisibilidadeBotao() {
+        // Mostrar botão apenas se for admin E estiver em desktop (768px+)
+        if (usuario?.papel === 'admin' && btnAdicionar && window.innerWidth >= 768) {
+            btnAdicionar.classList.remove('d-none')
+        } else if (btnAdicionar) {
+            btnAdicionar.classList.add('d-none')
+        }
     }
+
+    // Verificar visibilidade inicial
+    controlarVisibilidadeBotao()
+
+    // Verificar novamente quando a janela for redimensionada
+    window.addEventListener('resize', controlarVisibilidadeBotao)
 
     // Abrir modal
     if (btnAdicionar && modal && form) {
@@ -43,37 +54,47 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             try {
-                const token = localStorage.getItem('token')
-
-                const response = await fetch(`${BASE_URL}/api/cardapio`, {
+                const response = await fetchAutenticado(`${BASE_URL}/api/cardapio`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`
-                    },
                     body: JSON.stringify({ nome, descricao, preco, categoria })
                 })
 
+                if (!response.ok) {
+                    throw new Error(`Erro ${response.status}: ${response.statusText}`)
+                }
+
                 const text = await response.text()
+
+                if (!text.trim()) {
+                    throw new Error('Resposta vazia do servidor.')
+                }
 
                 try {
                     const result = JSON.parse(text)
-
-                    if (!response.ok) throw new Error(result.erro || 'Erro ao adicionar produto.')
-
                     modal.hide()
                     alert('Produto adicionado com sucesso!')
                     location.reload()
 
                 } catch (parseError) {
                     console.error('Erro ao interpretar resposta JSON:', parseError)
+                    console.error('Resposta recebida:', text)
                     alerta.textContent = 'Erro inesperado: resposta do servidor inválida.'
                     alerta.classList.remove('d-none')
                 }
 
             } catch (err) {
-                alerta.textContent = err.message
-                alerta.classList.remove('d-none')
+                console.error('Erro ao adicionar produto:', err)
+                
+                if (err.message === 'UNAUTHORIZED') {
+                    alerta.textContent = 'Sessão expirada. Redirecionando para login...'
+                    alerta.classList.remove('d-none')
+                    setTimeout(() => {
+                        window.location.href = '/view/loginView.html'
+                    }, 2000)
+                } else {
+                    alerta.textContent = err.message || 'Erro desconhecido ao adicionar produto.'
+                    alerta.classList.remove('d-none')
+                }
             }
         })
     }

@@ -237,6 +237,104 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
+  // Função para controlar visibilidade do botão flutuante
+  function controlarBotaoFlutuante() {
+    const botaoFlutuante = document.getElementById('novo-pedido-floating')
+    if (!botaoFlutuante) return
+
+    const footer = document.querySelector('footer')
+    if (!footer) return
+
+    const footerRect = footer.getBoundingClientRect()
+    const windowHeight = window.innerHeight
+    
+    // Ocultar o botão quando o footer estiver visível na tela
+    // Adiciona uma margem de 120px para começar a ocultar antes do footer aparecer completamente
+    // Isso considera a altura do próprio botão (56px) + margem de segurança
+    if (footerRect.top <= windowHeight + 120) {
+      botaoFlutuante.classList.add('btn-floating-hidden')
+    } else {
+      botaoFlutuante.classList.remove('btn-floating-hidden')
+    }
+  }
+
+  // Adicionar listener de scroll apenas em mobile (quando o botão flutuante está visível)
+  if (window.innerWidth < 768) {
+    window.addEventListener('scroll', controlarBotaoFlutuante)
+    // Verificar posição inicial
+    controlarBotaoFlutuante()
+    
+    // Configurar expansão do botão flutuante
+    configurarBotaoFlutuante()
+  }
+
+  // Também verificar quando a janela é redimensionada
+  window.addEventListener('resize', () => {
+    if (window.innerWidth < 768) {
+      if (!window.scrollListenerAdded) {
+        window.addEventListener('scroll', controlarBotaoFlutuante)
+        window.scrollListenerAdded = true
+      }
+      controlarBotaoFlutuante()
+      configurarBotaoFlutuante()
+    } else {
+      if (window.scrollListenerAdded) {
+        window.removeEventListener('scroll', controlarBotaoFlutuante)
+        window.scrollListenerAdded = false
+      }
+    }
+  })
+
+  // Função para configurar a expansão do botão flutuante
+  function configurarBotaoFlutuante() {
+    const botaoFlutuante = document.getElementById('novo-pedido-floating')
+    if (!botaoFlutuante) return
+
+    // Estado de expansão
+    let isExpanded = false
+
+    // Expandir no clique (toggle)
+    botaoFlutuante.addEventListener('click', (e) => {
+      // Se já está expandido, permitir navegação
+      if (isExpanded) {
+        return true // Permite o redirecionamento
+      }
+      
+      // Se não está expandido, expandir primeiro
+      e.preventDefault()
+      isExpanded = true
+      botaoFlutuante.classList.add('expanded')
+      
+      // Auto-colapsar após 3 segundos se não houver interação
+      setTimeout(() => {
+        if (isExpanded && !botaoFlutuante.matches(':hover')) {
+          isExpanded = false
+          botaoFlutuante.classList.remove('expanded')
+        }
+      }, 3000)
+    })
+
+    // Reset no mouse leave (apenas se não foi clicado)
+    botaoFlutuante.addEventListener('mouseleave', () => {
+      if (isExpanded) {
+        // Delay para permitir clique após hover
+        setTimeout(() => {
+          if (!botaoFlutuante.matches(':hover')) {
+            isExpanded = false
+            botaoFlutuante.classList.remove('expanded')
+          }
+        }, 500)
+      }
+    })
+
+    // Evitar colapso durante hover
+    botaoFlutuante.addEventListener('mouseenter', () => {
+      if (!isExpanded) {
+        botaoFlutuante.classList.add('expanded')
+      }
+    })
+  }
+
   /*const btnTeste = document.createElement('button')
   btnTeste.textContent = 'Criar Pedido Teste'
   btnTeste.className = 'btn btn-primary my-3'

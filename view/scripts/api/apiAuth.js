@@ -51,6 +51,7 @@ export function verificarAutenticacao() {
             
             if (agora - tempoLogin > diasExpiracao) {
                 // Login expirado, limpar dados
+                console.log('Token expirado (30 dias), limpando dados...')
                 limparDadosLembrarLogin()
                 return null
             }
@@ -60,7 +61,29 @@ export function verificarAutenticacao() {
         }
     }
     
-    return token ? { token } : null
+    if (token) {
+        // Verificar se o token não está corrompido
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]))
+            
+            // Verificar se o token não expirou
+            if (payload.exp && Date.now() >= payload.exp * 1000) {
+                console.log('Token JWT expirado, removendo...')
+                sessionStorage.removeItem('token')
+                localStorage.removeItem('token')
+                return null
+            }
+            
+            return { token, usuario: payload }
+        } catch (error) {
+            console.error('Token corrompido:', error)
+            sessionStorage.removeItem('token')
+            localStorage.removeItem('token')
+            return null
+        }
+    }
+    
+    return null
 }
 
 export function fazerLogout(esquecerLogin = false) {
@@ -116,4 +139,34 @@ export function getTempoRestanteLembrarLogin() {
     const tempoRestante = diasExpiracao - (agora - tempoLogin)
     
     return Math.max(0, Math.ceil(tempoRestante / (24 * 60 * 60 * 1000))) // dias restantes
+}
+
+// Função utilitária para fazer requisições autenticadas
+export async function fetchAutenticado(url, options = {}) {
+    const authData = verificarAutenticacao()
+    
+    if (!authData || !authData.token) {
+        throw new Error('UNAUTHORIZED')
+    }
+    
+    const headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authData.token}`,
+        ...options.headers
+    }
+    
+    const response = await fetch(url, {
+        ...options,
+        headers
+    })
+    
+    // Se o token for inválido, limpar dados de autenticação
+    if (response.status === 401 || response.status === 403) {
+        console.log('Token rejeitado pelo servidor, limpando dados...')
+        sessionStorage.removeItem('token')
+        localStorage.removeItem('token')
+        throw new Error('UNAUTHORIZED')
+    }
+    
+    return response
 }
