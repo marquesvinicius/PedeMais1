@@ -65,6 +65,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         statusElement.textContent = pedido.status
         statusElement.className = `status-badge-large ${getStatusClass(pedido.status)}`
 
+        // Aplicar gradiente no header baseado no status
+        const headerElement = document.querySelector('.pedido-header')
+        if (headerElement) {
+            // Remover classes de status anteriores
+            headerElement.classList.remove('status-pendente', 'status-preparo', 'status-pronto', 'status-entregue', 'status-cancelado')
+            
+            // Adicionar classe baseada no status atual
+            const statusLower = pedido.status.toLowerCase()
+            if (statusLower === 'pendente') {
+                headerElement.classList.add('status-pendente')
+            } else if (statusLower === 'em preparo') {
+                headerElement.classList.add('status-preparo')
+            } else if (statusLower === 'pronto') {
+                headerElement.classList.add('status-pronto')
+            } else if (statusLower === 'entregue') {
+                headerElement.classList.add('status-entregue')
+            } else if (statusLower === 'cancelado') {
+                headerElement.classList.add('status-cancelado')
+            }
+        }
+
         // Resumo
         document.getElementById('pedido-mesa').textContent = pedido.mesa
         
@@ -243,28 +264,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         else if (status === 'pronto') {
             const entregarBtn = document.createElement('button')
-            entregarBtn.className = 'btn btn-primary w-100 mb-2'
+            entregarBtn.className = 'btn btn-purple w-100 mb-2'
             entregarBtn.innerHTML = '<i class="fas fa-truck me-2"></i>Marcar como Entregue'
             entregarBtn.addEventListener('click', () => alterarStatus(pedido.id, 'entregue'))
             container.appendChild(entregarBtn)
         }
 
         // Separador
-        if (status !== 'entregue') {
+        if (status !== 'entregue' && status !== 'cancelado') {
             const hr = document.createElement('hr')
             container.appendChild(hr)
         }
 
-        // Botão de editar (se não estiver entregue)
-        if (status !== 'entregue') {
-            const editarBtn = document.createElement('button')
-            editarBtn.className = 'btn btn-outline-secondary w-100 mb-2'
-            editarBtn.innerHTML = '<i class="fas fa-edit me-2"></i>Editar Pedido'
-            editarBtn.addEventListener('click', () => {
-                // TODO: Implementar edição de pedido
-                showAlert('Funcionalidade de edição em desenvolvimento', 'info')
-            })
-            container.appendChild(editarBtn)
+        // Botão de cancelar (se não estiver entregue ou cancelado)
+        if (status !== 'entregue' && status !== 'cancelado') {
+            const cancelarBtn = document.createElement('button')
+            cancelarBtn.className = 'btn btn-outline-danger w-100 mb-2'
+            cancelarBtn.innerHTML = '<i class="fas fa-times me-2"></i>Cancelar Pedido'
+            cancelarBtn.addEventListener('click', () => alterarStatus(pedido.id, 'cancelado'))
+            container.appendChild(cancelarBtn)
         }
 
         // Botão de excluir (apenas se pendente)
@@ -334,9 +352,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const statusLower = status.toLowerCase()
         switch (statusLower) {
             case 'pendente': return 'bg-warning text-dark'
-            case 'em preparo': return 'bg-info text-white'
+            case 'em preparo': return 'status-preparo text-white'
             case 'pronto': return 'bg-success text-white'
-            case 'entregue': return 'bg-secondary text-white'
+            case 'entregue': return 'bg-purple text-white'
+            case 'cancelado': return 'bg-danger text-white'
             default: return 'bg-light text-dark'
         }
     }

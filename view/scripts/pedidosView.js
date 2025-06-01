@@ -133,6 +133,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           badge.classList.add('status-preparo')
         } else if (pedido.status.toLowerCase() === 'pronto') {
           badge.classList.add('status-pronto')
+        } else if (pedido.status.toLowerCase() === 'entregue') {
+          badge.classList.add('status-entregue')
+        } else if (pedido.status.toLowerCase() === 'cancelado') {
+          badge.classList.add('status-cancelado')
         }
       }
 
@@ -212,7 +216,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     else if (status === 'pronto') {
       // Botão para marcar como "Entregue"
       const entregarBtn = document.createElement('button')
-      entregarBtn.className = 'btn btn-info btn-sm'
+      entregarBtn.className = 'btn btn-purple btn-sm'
       entregarBtn.innerHTML = '<i class="fas fa-truck me-1"></i>Entregar'
       entregarBtn.addEventListener('click', (e) => {
         e.stopPropagation()

@@ -590,11 +590,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function getStatusColor(status) {
         switch (status.toLowerCase()) {
-            case 'pendente': return 'danger'
-            case 'em preparo': return 'warning'
-            case 'pronto': return 'success'
-            case 'entregue': return 'info'
-            default: return 'secondary'
+            case 'pendente': return 'yellow'
+            case 'em preparo': return 'orange'
+            case 'pronto': return 'green'
+            case 'entregue': return 'purple'
+            case 'cancelado': return 'red'
+            default: return 'gray'
         }
     }
 

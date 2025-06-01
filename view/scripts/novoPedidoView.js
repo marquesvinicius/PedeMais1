@@ -1,6 +1,7 @@
 // view/scripts/novoPedidoView.js
 import * as apiPedidos from './api/apiPedidos.js'
 import * as apiAuth from './api/apiAuth.js'
+import { BASE_URL } from './config.js'
 
 let itensSelecionados = []
 let produtos = []
@@ -36,8 +37,38 @@ async function carregarCardapio() {
     try {
         console.log('Carregando cardápio via API...')
         
-        // TODO: Implementar endpoint /api/produtos na API
-        // Por enquanto, usar produtos hardcoded
+        // Buscar produtos da API
+        const token = localStorage.getItem('token')
+        const response = await fetch(`${BASE_URL}/api/cardapio`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        
+        if (response.ok) {
+            produtos = await response.json()
+            console.log('Produtos carregados da API:', produtos)
+        } else {
+            console.warn('Erro ao carregar da API, usando produtos hardcoded')
+            // Fallback para produtos hardcoded
+            produtos = [
+                {
+                    id: 1,
+                    nome: 'Arroz',
+                    descricao: 'Arroz branco tradicional',
+                    preco: 5.00,
+                    categoria: 'Acompanhamentos',
+                    disponibilidade: true
+                }
+            ]
+        }
+        
+        console.log('Produtos carregados:', produtos)
+        
+        // Renderizar produtos
+        renderizarCardapio(produtos)
+        
+    } catch (error) {
+        console.error('Erro ao carregar cardápio:', error)
+        // Fallback para produtos hardcoded
         produtos = [
             {
                 id: 1,
@@ -48,15 +79,7 @@ async function carregarCardapio() {
                 disponibilidade: true
             }
         ]
-        
-        console.log('Produtos carregados:', produtos)
-        
-        // Renderizar produtos
         renderizarCardapio(produtos)
-        
-    } catch (error) {
-        console.error('Erro ao carregar cardápio:', error)
-        mostrarErro('Erro ao carregar cardápio.')
     } finally {
         loadingSpinner.style.display = 'none'
     }

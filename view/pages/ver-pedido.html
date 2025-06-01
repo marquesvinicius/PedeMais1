@@ -21,6 +21,28 @@
             color: white;
             padding: 2rem 0;
             margin-bottom: 2rem;
+            transition: background 0.5s ease;
+        }
+        
+        /* Gradientes específicos por status */
+        .pedido-header.status-pendente {
+            background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+        }
+        
+        .pedido-header.status-preparo {
+            background: linear-gradient(135deg, #fd7e14 0%, #e8590c 100%);
+        }
+        
+        .pedido-header.status-pronto {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+        }
+        
+        .pedido-header.status-entregue {
+            background: linear-gradient(135deg, #6f42c1 0%, #5a359a 100%);
+        }
+        
+        .pedido-header.status-cancelado {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
         }
         
         .status-badge-large {
@@ -106,7 +128,7 @@
 
 <body data-requer-auth="true">
     <!-- Botão de voltar -->
-    <a href="pedidos.html" class="btn btn-outline-primary back-button">
+    <a href="pedidos.html" class="btn btn-warning back-button">
         <i class="fas fa-arrow-left me-2"></i>Voltar aos Pedidos
     </a>
 
