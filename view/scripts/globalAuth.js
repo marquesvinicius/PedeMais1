@@ -63,6 +63,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const requerAuth = document.body.dataset.requerAuth === 'true'
 
     if (requerAuth) {
+        // Verificar se é um cadastro recente para evitar redirecionamento indevido
+        const cadastroRecente = sessionStorage.getItem('cadastroRecente')
+        const logoutRecente = sessionStorage.getItem('logoutRecente')
+        
+        if (cadastroRecente) {
+            // Limpar a flag de cadastro recente
+            sessionStorage.removeItem('cadastroRecente')
+            return // Não verificar autenticação neste caso
+        }
+        
+        if (logoutRecente) {
+            // Limpar a flag de logout recente
+            sessionStorage.removeItem('logoutRecente')
+            window.location.href = '../../index.html'
+            return
+        }
+        
         const token = apiAuth.verificarAutenticacao()
         if (!token) {
             window.location.href = '../../index.html'

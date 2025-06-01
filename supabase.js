@@ -1,7 +1,5 @@
 // supabase.js
-
-const SUPABASE_URL = 'https://kecthdahzuzjoilfntiq.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtlY3RoZGFoenV6am9pbGZudGlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzODE5NjEsImV4cCI6MjA2MTk1Nzk2MX0.3jFEYqQFr00hE4jmNtE7iZjXqbei5MgpVD_IRwiGKkw'
+import { SUPABASE_CONFIG } from './view/scripts/config.js'
 
 let supabaseClient = null
 
@@ -10,7 +8,7 @@ function initializeSupabase() {
     if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
         // Criar a instância do Supabase se não existir
         if (!supabaseClient) {
-            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+            supabaseClient = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey)
             console.log('Supabase inicializado com sucesso!')
         }
         return supabaseClient

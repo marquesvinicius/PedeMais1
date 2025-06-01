@@ -165,19 +165,56 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (response.ok) {
-                // Armazena o token e o tipo de usuário no localStorage
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('tipoUsuario', data.usuario.papel);
-                localStorage.setItem('usuario', JSON.stringify(data.usuario));
+                console.log('=== CADASTRO BEM-SUCEDIDO ===');
+                console.log('Dados do usuário:', data.usuario);
                 
-                console.log('Usuário cadastrado com sucesso, redirecionando...');
-                mostrarNotificacao('Cadastro realizado com sucesso! Redirecionando...', 'success');
+                mostrarNotificacao('Cadastro realizado com sucesso! Fazendo login automático...', 'success');
                 
-                // Para garantir que funcione em qualquer ambiente
-                const baseUrl = window.location.origin;
-                setTimeout(() => {
-                    window.location.href = `${baseUrl}/view/pages/pedidos.html`;
-                }, 2000);
+                // Fazer login automático após cadastro
+                try {
+                    const loginResponse = await fetch(`${BASE_URL}/api/auth/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            email: formData.email,
+                            senha: formData.senha
+                        })
+                    });
+                    
+                    const loginData = await loginResponse.json();
+                    
+                    if (loginResponse.ok && loginData.token) {
+                        // Salvar o token recebido do login
+                        sessionStorage.setItem('token', loginData.token);
+                        localStorage.setItem('token', loginData.token);
+                        localStorage.setItem('tipoUsuario', data.usuario.papel);
+                        localStorage.setItem('usuario', JSON.stringify(data.usuario));
+                        
+                        // Marcar que foi um cadastro recente
+                        sessionStorage.setItem('cadastroRecente', 'true');
+                        
+                        mostrarNotificacao('Login automático realizado! Entrando no sistema...', 'success');
+                        
+                        // Redirecionamento
+                        setTimeout(() => {
+                            window.location.replace('./pedidos.html');
+                        }, 1500);
+                        
+                    } else {
+                        console.error('Erro no login automático:', loginData);
+                        mostrarNotificacao('Cadastro realizado! Por favor, faça login manualmente.', 'warning');
+                        setTimeout(() => {
+                            window.location.href = '../../index.html';
+                        }, 2000);
+                    }
+                    
+                } catch (loginError) {
+                    console.error('Erro no login automático:', loginError);
+                    mostrarNotificacao('Cadastro realizado! Por favor, faça login manualmente.', 'warning');
+                    setTimeout(() => {
+                        window.location.href = '../../index.html';
+                    }, 2000);
+                }
             } else {
                 console.log('Erro no cadastro:', data.message);
                 mostrarNotificacao(data.message || 'Erro ao realizar cadastro. Tente novamente.', 'danger');
