@@ -211,9 +211,14 @@ function atualizarResumo() {
         const li = document.createElement('li')
         li.className = 'list-group-item d-flex justify-content-between align-items-center'
         li.innerHTML = `
-      ${item.nome} <span>R$ ${item.preco.toFixed(2)}</span>
-      <button class="btn btn-sm btn-danger" data-index="${index}"><i class="fas fa-trash"></i></button>
-    `
+            <div class="item-info">
+                <span class="item-nome">${item.nome}</span>
+                <span class="item-preco">R$ ${item.preco.toFixed(2)}</span>
+            </div>
+            <button class="btn btn-sm btn-danger btn-remover" data-index="${index}">
+                <i class="fas fa-trash"></i>
+            </button>
+        `
         lista.appendChild(li)
     })
 
