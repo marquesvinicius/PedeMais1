@@ -191,6 +191,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const descricao = template.querySelector('.produto-descricao')
         const preco = template.querySelector('.produto-preco')
         const btnDetalhes = template.querySelector('.btn-ver-detalhes')
+        const btnDeletar = template.querySelector('.btn-deletar-produto')
 
         if (nome) nome.textContent = produto.nome
         if (descricao) descricao.textContent = produto.descricao
@@ -198,6 +199,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (btnDetalhes) {
             btnDetalhes.addEventListener('click', () => mostrarDetalhesProduto(produto))
+        }
+
+        // Mostrar botão de deletar apenas para administradores
+        const usuario = apiAuth.getUsuarioAtual()
+        if (btnDeletar && usuario?.papel === 'admin') {
+            btnDeletar.classList.remove('d-none')
+            btnDeletar.addEventListener('click', (e) => {
+                e.stopPropagation()
+                deletarProduto(produto)
+            })
         }
 
         return template
@@ -254,6 +265,100 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Abrir o modal
         const modalInstance = new bootstrap.Modal(modal)
         modalInstance.show()
+    }
+
+    async function deletarProduto(produto) {
+        const confirmacao = confirm(`Tem certeza que deseja deletar o produto "${produto.nome}"?\n\nEsta ação não pode ser desfeita.`)
+        
+        if (!confirmacao) {
+            return
+        }
+
+        try {
+            mostrarLoading(true)
+            
+            // Primeiro tentar verificar se está em uso
+            const produtoEmUso = await apiProdutos.verificarProdutoEmUso(produto.id)
+            
+            if (produtoEmUso) {
+                mostrarLoading(false)
+                
+                const opcaoDesativar = confirm(
+                    `O produto "${produto.nome}" não pode ser deletado pois já foi usado em pedidos.\n\n` +
+                    'Deseja desativá-lo? Produtos desativados não aparecem mais no cardápio, ' +
+                    'mas mantêm o histórico de pedidos.\n\n' +
+                    'Clique em "OK" para desativar ou "Cancelar" para manter como está.'
+                )
+                
+                if (opcaoDesativar) {
+                    try {
+                        mostrarLoading(true)
+                        await apiProdutos.desativarProduto(produto.id)
+                        
+                        // Remover o produto da lista local (simula desativação na interface)
+                        produtos = produtos.filter(p => p.id !== produto.id)
+                        
+                        // Re-renderizar a lista de produtos
+                        await aplicarFiltros()
+                        
+                        alert('Produto desativado com sucesso! Ele não aparecerá mais no cardápio.')
+                    } catch (desativarError) {
+                        console.error('Erro ao desativar produto:', desativarError)
+                        alert('Erro ao desativar produto: ' + desativarError.message)
+                    }
+                }
+                return
+            }
+            
+            // Se não está em uso, pode deletar normalmente
+            await apiProdutos.deletarProduto(produto.id)
+            
+            // Remover o produto da lista local
+            produtos = produtos.filter(p => p.id !== produto.id)
+            
+            // Re-renderizar a lista de produtos
+            await aplicarFiltros()
+            
+            // Mostrar mensagem de sucesso
+            alert('Produto deletado com sucesso!')
+            
+        } catch (error) {
+            console.error('Erro ao deletar produto:', error)
+            
+            // Tratamento específico para erro de chave estrangeira
+            if (error.message.includes('foreign key constraint') || 
+                error.message.includes('violates foreign key') ||
+                error.message.includes('já foi usado em pedidos')) {
+                
+                const opcaoDesativar = confirm(
+                    `O produto "${produto.nome}" não pode ser deletado pois já foi usado em pedidos.\n\n` +
+                    'Deseja desativá-lo? Produtos desativados não aparecem mais no cardápio, ' +
+                    'mas mantêm o histórico de pedidos.\n\n' +
+                    'Clique em "OK" para desativar ou "Cancelar" para manter como está.'
+                )
+                
+                if (opcaoDesativar) {
+                    try {
+                        await apiProdutos.desativarProduto(produto.id)
+                        
+                        // Remover o produto da lista local (simula desativação na interface)
+                        produtos = produtos.filter(p => p.id !== produto.id)
+                        
+                        // Re-renderizar a lista de produtos
+                        await aplicarFiltros()
+                        
+                        alert('Produto desativado com sucesso! Ele não aparecerá mais no cardápio.')
+                    } catch (desativarError) {
+                        console.error('Erro ao desativar produto:', desativarError)
+                        alert('Erro ao desativar produto: ' + desativarError.message)
+                    }
+                }
+            } else {
+                alert('Erro ao deletar produto: ' + error.message)
+            }
+        } finally {
+            mostrarLoading(false)
+        }
     }
 
     function mostrarLoading(ativo) {

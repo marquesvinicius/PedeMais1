@@ -80,9 +80,21 @@ document.addEventListener('DOMContentLoaded', () => {
             return
         }
         
-        const token = apiAuth.verificarAutenticacao()
-        if (!token) {
+        // Verificar se há algum token (válido ou inválido)
+        const temToken = sessionStorage.getItem('token') || localStorage.getItem('token')
+        
+        if (!temToken) {
+            // Só redireciona se não há token algum
             window.location.href = '../../index.html'
+        } else {
+            // Se há token, verificar se é válido
+            const authData = apiAuth.verificarAutenticacao()
+            if (!authData) {
+                // Token inválido ou expirado - redirecionar
+                window.location.href = '../../index.html'
+            }
+            // Se token é válido, deixar a página carregar normalmente
+            // As funcionalidades individuais verificarão o papel do usuário
         }
     }
 })

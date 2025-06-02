@@ -2,8 +2,47 @@
 import { getUsuarioAtual, fetchAutenticado } from './api/apiAuth.js'
 import { BASE_URL } from './config.js'
 
+// FUNÇÕES TEMPORÁRIAS PARA TESTE DE PAPÉIS DE USUÁRIO
+function simularUsuarioAdmin() {
+    const usuarioTeste = {
+        id: 1,
+        nome: 'Admin Teste',
+        email: 'admin@teste.com',
+        papel: 'admin'
+    }
+    
+    const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }))
+    const payload = btoa(JSON.stringify(usuarioTeste))
+    const signature = 'test-signature'
+    const tokenTeste = `${header}.${payload}.${signature}`
+    
+    sessionStorage.setItem('token', tokenTeste)
+    console.log('🔧 Usuário ADMIN simulado para teste:', usuarioTeste)
+}
+
+function simularUsuarioFuncionario() {
+    const usuarioTeste = {
+        id: 2,
+        nome: 'João Funcionário',
+        email: 'funcionario@teste.com',
+        papel: 'funcionario'
+    }
+    
+    const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }))
+    const payload = btoa(JSON.stringify(usuarioTeste))
+    const signature = 'test-signature'
+    const tokenTeste = `${header}.${payload}.${signature}`
+    
+    sessionStorage.setItem('token', tokenTeste)
+    console.log('🔧 Usuário FUNCIONÁRIO simulado para teste:', usuarioTeste)
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // FUNÇÃO TEMPORÁRIA PARA TESTE
+    // Descomente uma das linhas abaixo para testar
+    // simularUsuarioAdmin()        // Para testar como admin
+    // simularUsuarioFuncionario()  // Para testar como funcionário
+    
     const usuario = getUsuarioAtual()
     const btnAdicionar = document.getElementById('btn-abrir-modal-produto')
     const form = document.getElementById('form-novo-produto')
@@ -11,12 +50,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     const modal = new bootstrap.Modal(modalElement)
     const alerta = document.getElementById('mensagem-erro-produto')
 
+    // Função para mostrar aviso de sem permissão
+    function mostrarAvisoSemPermissao() {
+        const nomeUsuario = usuario?.nome || 'Usuário'
+        alert(`🔒 Acesso Restrito\n\nOlá ${nomeUsuario}!\n\nApenas administradores podem adicionar produtos.\n\nSeu papel atual: ${usuario?.papel || 'Não definido'}\n\nSe você precisa desta funcionalidade, entre em contato com um administrador.`)
+    }
+
     // Função para controlar visibilidade do botão baseado no tamanho da tela
     function controlarVisibilidadeBotao() {
-        // Mostrar botão apenas se for admin E estiver em desktop (768px+)
-        if (usuario?.papel === 'admin' && btnAdicionar && window.innerWidth >= 768) {
+        if (!btnAdicionar) return
+        
+        if (usuario?.papel === 'admin' && window.innerWidth >= 768) {
+            // Admin em desktop - mostrar botão funcional
             btnAdicionar.classList.remove('d-none')
-        } else if (btnAdicionar) {
+            // Remover event listeners anteriores se existirem
+            btnAdicionar.replaceWith(btnAdicionar.cloneNode(true))
+            const btnAtualizado = document.getElementById('btn-abrir-modal-produto')
+            btnAtualizado.addEventListener('click', () => {
+                form.reset()
+                alerta.classList.add('d-none')
+                modal.show()
+            })
+        } else if (usuario?.papel === 'funcionario' && window.innerWidth >= 768) {
+            // Funcionário em desktop - mostrar botão com aviso
+            btnAdicionar.classList.remove('d-none')
+            btnAdicionar.title = 'Apenas administradores podem adicionar produtos'
+            // Remover event listeners anteriores se existirem
+            btnAdicionar.replaceWith(btnAdicionar.cloneNode(true))
+            const btnAtualizado = document.getElementById('btn-abrir-modal-produto')
+            btnAtualizado.addEventListener('click', (e) => {
+                e.preventDefault()
+                mostrarAvisoSemPermissao()
+            })
+        } else {
+            // Outros casos - ocultar botão
             btnAdicionar.classList.add('d-none')
         }
     }
@@ -27,19 +94,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Verificar novamente quando a janela for redimensionada
     window.addEventListener('resize', controlarVisibilidadeBotao)
 
-    // Abrir modal
-    if (btnAdicionar && modal && form) {
-        btnAdicionar.addEventListener('click', () => {
-            form.reset()
-            alerta.classList.add('d-none')
-            modal.show()
-        })
-    }
-
-    // Submeter formulário
+    // Submeter formulário (apenas para admins)
     if (form) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault()
+            
+            // Verificar permissão antes de enviar
+            if (usuario?.papel !== 'admin') {
+                mostrarAvisoSemPermissao()
+                modal.hide()
+                return
+            }
+            
             alerta.classList.add('d-none')
 
             const nome = document.getElementById('produtoNome').value.trim()
@@ -86,11 +152,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 console.error('Erro ao adicionar produto:', err)
                 
                 if (err.message === 'UNAUTHORIZED') {
-                    alerta.textContent = 'Sessão expirada. Redirecionando para login...'
+                    // Ao invés de redirecionar, mostrar erro e fechar modal
+                    alerta.textContent = 'Erro de autenticação. Você não tem permissão para esta ação.'
                     alerta.classList.remove('d-none')
+                    
+                    // Fechar modal após alguns segundos
                     setTimeout(() => {
-                        window.location.href = '/view/loginView.html'
-                    }, 2000)
+                        modal.hide()
+                    }, 3000)
                 } else {
                     alerta.textContent = err.message || 'Erro desconhecido ao adicionar produto.'
                     alerta.classList.remove('d-none')

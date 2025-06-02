@@ -10,6 +10,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Verificar autenticação
     await apiAuth.verificarAutenticacao()
 
+    // FUNÇÃO TEMPORÁRIA PARA TESTE - Simular usuário funcionário
+    // Descomente a linha abaixo para testar tela de acesso restrito
+    // simularUsuarioFuncionario()
+
+    // Verificar privilégios de acesso
+    const usuario = apiAuth.getUsuarioAtual()
+    
     // Reutilizar instância do Supabase existente
     const supabaseInstance = window.supabase ? 
         (window.supabaseClient || window.supabase.createClient(
@@ -36,10 +43,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     btnGerar.addEventListener('click', gerarRelatorio)
     btnLimpar.addEventListener('click', limparFiltros)
 
+    // Controlar acesso do botão para funcionários
+    if (usuario?.papel === 'funcionario') {
+        btnGerar.classList.add('btn-secondary')
+        btnGerar.classList.remove('btn-primary')
+        btnGerar.title = 'Apenas administradores podem gerar relatórios'
+        btnGerar.innerHTML = '<i class="fas fa-lock me-2"></i>Gerar Relatório (Restrito)'
+    }
+
     // Definir data padrão (últimos 30 dias)
     definirDatasPadrao()
 
     async function gerarRelatorio() {
+        // Verificar se é funcionário
+        const usuario = apiAuth.getUsuarioAtual()
+        if (usuario?.papel === 'funcionario') {
+            mostrarAvisoFuncionario()
+            return
+        }
+
         try {
             mostrarLoading(true)
             
@@ -672,23 +694,90 @@ document.addEventListener('DOMContentLoaded', async () => {
         cardsResumo.style.display = 'none'
         conteudoRelatorio.innerHTML = `
             <div class="alert alert-warning text-center">
-                <i class="fas fa-exclamation-triangle me-2"></i>
-                <h5 class="mb-3">Funcionalidade de Relatórios em Deploy</h5>
+                <i class="fas fa-server me-2"></i>
+                <h5 class="mb-3">Backend não encontrado</h5>
                 <p class="mb-3">
-                    As rotas de relatórios foram implementadas mas ainda não foram deployadas no servidor de produção.
+                    O sistema de relatórios ainda não foi implantado no servidor.
+                    Os dados exibidos são simulados para demonstração.
                 </p>
-                <div class="mb-3">
-                    <strong>Para testar localmente:</strong>
-                    <ol class="text-start mt-2">
-                        <li>Execute o servidor backend local na porta 5000</li>
-                        <li>A funcionalidade funcionará perfeitamente com dados reais do Supabase</li>
-                    </ol>
-                </div>
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle me-2"></i>
-                    <strong>Status:</strong> Implementação completa ✅ | Deploy pendente ⏳
+                    <strong>Status:</strong> Backend pendente de deploy 🚀
+                </div>
+            </div>
+        `
+    }
+
+    function mostrarAvisoFuncionario() {
+        const usuario = apiAuth.getUsuarioAtual()
+        const nomeUsuario = usuario?.nome || 'Usuário'
+        
+        // Limpar conteúdo anterior
+        conteudoRelatorio.innerHTML = ''
+        cardsResumo.style.display = 'none'
+        
+        // Mostrar aviso elegante
+        conteudoRelatorio.innerHTML = `
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="alert alert-warning border-warning">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-lock fa-2x text-warning me-3"></i>
+                            <div>
+                                <h5 class="mb-1">Acesso Restrito aos Relatórios</h5>
+                                <small class="text-muted">Olá, ${nomeUsuario}!</small>
+                            </div>
+                        </div>
+                        
+                        <p class="mb-3">
+                            <strong>Apenas administradores</strong> podem gerar e visualizar relatórios. 
+                            Esta restrição protege informações sensíveis do negócio.
+                        </p>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="alert alert-light mb-0">
+                                    <i class="fas fa-info-circle text-info me-2"></i>
+                                    <strong>Seu papel:</strong> ${usuario?.papel || 'Não definido'}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="alert alert-light mb-0">
+                                    <i class="fas fa-shield-alt text-success me-2"></i>
+                                    <strong>Acesso necessário:</strong> Administrador
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="text-center">
+                            <small class="text-muted">
+                                <i class="fas fa-lightbulb me-1"></i>
+                                <strong>Precisa deste acesso?</strong> Entre em contato com um administrador.
+                            </small>
+                        </div>
+                    </div>
                 </div>
             </div>
         `
     }
 })
+
+// FUNÇÃO TEMPORÁRIA PARA TESTE
+function simularUsuarioFuncionario() {
+    const usuarioTeste = {
+        id: 2,
+        nome: 'João Funcionário',
+        email: 'funcionario@teste.com',
+        papel: 'funcionario'
+    }
+    
+    const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }))
+    const payload = btoa(JSON.stringify(usuarioTeste))
+    const signature = 'test-signature'
+    const tokenTeste = `${header}.${payload}.${signature}`
+    
+    sessionStorage.setItem('token', tokenTeste)
+    console.log('🔧 Usuário FUNCIONÁRIO simulado para teste de relatórios:', usuarioTeste)
+}
